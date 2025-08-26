@@ -14,7 +14,7 @@ import type { Tables } from '@/types/supabase'
 
 type CartItem = {
   id: string
-  product: Tables<'products'>
+  product: Tables<'products'> | null
   quantity: number
 }
 
@@ -96,7 +96,7 @@ export default function CheckoutPage() {
           }
         })
       )
-      setCartItems(itemsWithProducts.filter(item => item.product))
+      setCartItems(itemsWithProducts.filter(item => item.product) as CartItem[])
     } catch (error) {
       console.error('Error loading cart:', error)
     } finally {
@@ -105,7 +105,7 @@ export default function CheckoutPage() {
   }
 
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0)
+    return cartItems.reduce((total, item) => total + (item.product!.price * item.quantity), 0)
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -141,7 +141,7 @@ export default function CheckoutPage() {
         order_id: order.id,
         product_id: item.id,
         quantity: item.quantity,
-        price: item.product.price
+        price: item.product!.price
       }))
 
       const { error: itemsError } = await supabase
@@ -292,11 +292,11 @@ export default function CheckoutPage() {
             {cartItems.map((item) => (
               <div key={item.id} className="flex justify-between items-center py-2 border-b">
                 <div className="flex-1">
-                  <h4 className="font-medium">{item.product.name}</h4>
+                  <h4 className="font-medium">{item.product!.name}</h4>
                   <p className="text-sm text-muted-foreground">Cantidad: {item.quantity}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">{formatPrice(item.product.price * item.quantity)}</p>
+                  <p className="font-medium">{formatPrice(item.product!.price * item.quantity)}</p>
                 </div>
               </div>
             ))}
