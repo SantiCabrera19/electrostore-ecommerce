@@ -94,7 +94,7 @@ export default function AdminPanel() {
         name: formData.name,
         description: formData.description,
         price: parseFloat(formData.price),
-        category_id: parseInt(formData.category_id),
+        category_id: formData.category_id, // Keep as string (UUID)
         stock: parseInt(formData.stock),
         images: imageUrls,
         specs: formData.specs
