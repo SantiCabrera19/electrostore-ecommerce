@@ -28,16 +28,20 @@ export default function AdminPanel() {
 
   // Form state
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    category_id: "",
-    stock: "",
-    specs: {},
-    images: [] as string[]
+    name: '',
+    price: '',
+    description: '',
+    stock: '',
+    category_id: '',
+    images: [] as string[],
+    main_image: '' as string,
+    specs: {} as Record<string, string>
   })
+  const [newSpecKey, setNewSpecKey] = useState('')
+  const [newSpecValue, setNewSpecValue] = useState('')
 
   const [uploadedImages, setUploadedImages] = useState<File[]>([])
+  const [mainImageIndex, setMainImageIndex] = useState<number>(0)
 
   useEffect(() => {
     checkAuth()
@@ -78,17 +82,52 @@ export default function AdminPanel() {
 
   const removeImage = (index: number) => {
     setUploadedImages(prev => prev.filter((_, i) => i !== index))
+    // Ajustar el índice de la imagen principal si es necesario
+    if (index === mainImageIndex) {
+      setMainImageIndex(0) // Resetear a la primera imagen
+    } else if (index < mainImageIndex) {
+      setMainImageIndex(prev => prev - 1) // Decrementar si se eliminó una imagen anterior
+    }
+  }
+
+  const uploadImages = async (files: File[]): Promise<string[]> => {
+    if (files.length === 0) return []
+
+    const formData = new FormData()
+    files.forEach(file => formData.append('files', file))
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to upload images')
+    }
+
+    const result = await response.json()
+    return result.files
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     try {
-      // Here you would upload images to your storage solution
-      // For now, we'll simulate image URLs
-      const imageUrls = uploadedImages.map((file, index) => 
-        `/products/${formData.name.toLowerCase().replace(/\s+/g, '-')}-${index + 1}.jpg`
-      )
+      // Upload images first
+      const uploadedImageNames = await uploadImages(uploadedImages)
+      
+      // Combine existing images with new uploaded images
+      const allImages = editingProduct 
+        ? [...(formData.images || []), ...uploadedImageNames]
+        : uploadedImageNames
+      
+      // Set main image - if new images uploaded, use the selected one, otherwise keep existing
+      let mainImage = formData.main_image
+      if (uploadedImageNames.length > 0) {
+        mainImage = uploadedImageNames[mainImageIndex] || uploadedImageNames[0]
+      } else if (!mainImage && allImages.length > 0) {
+        mainImage = allImages[0]
+      }
 
       const productData = {
         name: formData.name,
@@ -96,7 +135,8 @@ export default function AdminPanel() {
         price: parseFloat(formData.price),
         category_id: formData.category_id, // Keep as string (UUID)
         stock: parseInt(formData.stock),
-        images: imageUrls,
+        images: allImages,
+        main_image: mainImage,
         specs: formData.specs
       }
 
@@ -119,7 +159,8 @@ export default function AdminPanel() {
         category_id: "",
         stock: "",
         specs: {},
-        images: []
+        images: [],
+        main_image: ""
       })
       setUploadedImages([])
       setShowForm(false)
@@ -148,8 +189,11 @@ export default function AdminPanel() {
       price: product.price.toString(),
       category_id: product.category_id?.toString() || "",
       stock: product.stock.toString(),
-      specs: product.specs || {},
-      images: product.images || []
+      specs: (product.specs && typeof product.specs === 'object' && !Array.isArray(product.specs)) 
+        ? product.specs as Record<string, string> 
+        : {},
+      images: product.images || [],
+      main_image: (product as any).main_image || ""
     })
     setShowForm(true)
   }
@@ -186,7 +230,19 @@ export default function AdminPanel() {
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     required
+                    placeholder="ej: Refrigerador Samsung 300L"
                   />
+                  {formData.name && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      URL: /store/{formData.name.toLowerCase()
+                        .replace(/[áéíóúñü]/g, (match) => {
+                          const map: {[key: string]: string} = { 'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ñ': 'n', 'ü': 'u' }
+                          return map[match] || match
+                        })
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-+|-+$/g, '')}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="price">Precio</Label>
@@ -197,7 +253,11 @@ export default function AdminPanel() {
                     value={formData.price}
                     onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
                     required
+                    placeholder="ej: 89999"
                   />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Precio sin puntos ni comas (ej: 89999 = $89.999)
+                  </p>
                 </div>
                 <div>
                   <Label htmlFor="category">Categoría</Label>
@@ -236,6 +296,66 @@ export default function AdminPanel() {
                 />
               </div>
 
+              {/* Especificaciones */}
+              <div>
+                <Label>Especificaciones Técnicas</Label>
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Característica (ej: color, capacidad)"
+                      value={newSpecKey}
+                      onChange={(e) => setNewSpecKey(e.target.value)}
+                    />
+                    <Input
+                      placeholder="Valor (ej: Acero Inoxidable, 500L)"
+                      value={newSpecValue}
+                      onChange={(e) => setNewSpecValue(e.target.value)}
+                    />
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        if (newSpecKey && newSpecValue) {
+                          setFormData(prev => ({
+                            ...prev,
+                            specs: { ...prev.specs, [newSpecKey]: newSpecValue }
+                          }))
+                          setNewSpecKey('')
+                          setNewSpecValue('')
+                        }
+                      }}
+                      size="sm"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  {Object.entries(formData.specs).length > 0 && (
+                    <div className="border rounded-lg p-3 space-y-2">
+                      <p className="text-sm font-medium">Especificaciones agregadas:</p>
+                      {Object.entries(formData.specs).map(([key, value]) => (
+                        <div key={key} className="flex items-center justify-between bg-muted p-2 rounded">
+                          <span className="text-sm"><strong>{key}:</strong> {value}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setFormData(prev => {
+                                const newSpecs = { ...prev.specs }
+                                delete newSpecs[key]
+                                return { ...prev, specs: newSpecs }
+                              })
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div>
                 <Label htmlFor="images">Imágenes del Producto</Label>
                 <Input
@@ -252,7 +372,10 @@ export default function AdminPanel() {
                       <img
                         src={URL.createObjectURL(file)}
                         alt={`Preview ${index + 1}`}
-                        className="w-full h-20 object-cover rounded border"
+                        className={`w-full h-20 object-cover rounded border-2 cursor-pointer transition-all ${
+                          index === mainImageIndex ? 'border-primary ring-2 ring-primary/20' : 'border-gray-200 hover:border-primary/50'
+                        }`}
+                        onClick={() => setMainImageIndex(index)}
                       />
                       <Button
                         type="button"
@@ -263,9 +386,19 @@ export default function AdminPanel() {
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
+                      {index === mainImageIndex && (
+                        <div className="absolute bottom-1 left-1 bg-primary text-primary-foreground text-xs px-1 py-0.5 rounded">
+                          Principal
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
+                {uploadedImages.length > 0 && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Haz clic en una imagen para marcarla como principal
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
@@ -286,7 +419,8 @@ export default function AdminPanel() {
                       category_id: "",
                       stock: "",
                       specs: {},
-                      images: []
+                      images: [],
+                      main_image: ""
                     })
                     setUploadedImages([])
                   }}

@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS public.products (
   price NUMERIC(10, 2) NOT NULL,
   stock INTEGER NOT NULL DEFAULT 0,
   images TEXT[] NOT NULL DEFAULT '{}',
+  main_image TEXT,
   specs JSONB NOT NULL DEFAULT '{}',
   category_id UUID REFERENCES public.categories(id) ON DELETE SET NULL,
   brand_id UUID REFERENCES public.brands(id) ON DELETE SET NULL,

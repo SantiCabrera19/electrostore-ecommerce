@@ -33,7 +33,7 @@ function formatPrice(price: number) {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const slug = toSlug(product.name)
-  const image = getProductMainImage(product.id)
+  const image = getProductMainImage(product.id, product.images as string[], (product as any).main_image)
   const specs = (product.specs ?? {}) as Record<string, unknown>
   
   const originalPrice = typeof specs["original_price"] === "number" ? specs["original_price"] : undefined

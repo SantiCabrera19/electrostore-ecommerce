@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { createBrowserClient } from "@/lib/supabase"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { getAllProductImages } from "@/lib/images"
+import { getProductGallery } from "@/lib/images"
 import ProductImageGallery from "@/components/product/ProductImageGallery"
 import ProductInfo from "@/components/product/ProductInfo"
 import ProductSpecs from "@/components/product/ProductSpecs"
@@ -104,7 +104,7 @@ export default function ProductDetailPage({ params, searchParams }: PageProps) {
 
   if (!product) return null
 
-  const productImages = getAllProductImages(product.id)
+  const productImages = getProductGallery(product.id, product.images as string[])
 
   return (
     <div className="min-h-screen bg-background">

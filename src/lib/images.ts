@@ -69,13 +69,30 @@ export const PRODUCT_IMAGES: Record<string, ProductImages> = {
 }
 
 // Función para obtener imagen principal de un producto
-export function getProductMainImage(productId: string): string {
+export function getProductMainImage(productId: string, productImages?: string[], mainImage?: string): string {
+  // Si hay una imagen principal específica, usarla
+  if (mainImage) {
+    return `/${mainImage}`
+  }
+  
+  // Si el producto tiene imágenes subidas, usar la primera
+  if (productImages && productImages.length > 0) {
+    return `/${productImages[0]}`
+  }
+  
+  // Fallback al sistema anterior para productos existentes
   const images = PRODUCT_IMAGES[productId]
   return images?.main || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjlGQUZCIiBzdHJva2U9IiNFNUU3RUIiLz4KPHN2ZyB4PSI3NSIgeT0iNzUiIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjOUNBM0FGIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIi8+Cjwvc3ZnPgo8dGV4dCB4PSIxMDAiIHk9IjE0MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5FbGVjdHJvU3RvcmU8L3RleHQ+Cjwvc3ZnPgo='
 }
 
 // Función para obtener todas las imágenes de galería
-export function getProductGallery(productId: string): string[] {
+export function getProductGallery(productId: string, productImages?: string[]): string[] {
+  // Si el producto tiene imágenes subidas, usarlas
+  if (productImages && productImages.length > 0) {
+    return productImages.map(img => `/${img}`)
+  }
+  
+  // Fallback al sistema anterior para productos existentes
   const images = PRODUCT_IMAGES[productId]
   return images?.gallery || ['data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjlGQUZCIiBzdHJva2U9IiNFNUU3RUIiLz4KPHN2ZyB4PSI3NSIgeT0iNzUiIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjOUNBM0FGIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIi8+Cjwvc3ZnPgo8dGV4dCB4PSIxMDAiIHk9IjE0MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5FbGVjdHJvU3RvcmU8L3RleHQ+Cjwvc3ZnPgo=']
 }

@@ -148,7 +148,7 @@ export default function CartPage() {
                   <div className="flex items-center gap-3 sm:gap-4">
                     <div className="flex-shrink-0">
                       <img
-                        src={getProductMainImage(item.product.id)}
+                        src={getProductMainImage(item.product.id, item.product.images as string[], (item.product as any).main_image)}
                         alt={item.product.name}
                         className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-md"
                       />

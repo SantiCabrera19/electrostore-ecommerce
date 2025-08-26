@@ -2,6 +2,10 @@ import { createServerClient } from "@/lib/supabase"
 import EcommercePageClient from "@/components/catalog/EcommercePageClient"
 import type { Tables } from "@/types/supabase"
 
+// Deshabilitar cache para que siempre muestre productos actualizados
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function EcommercePage({
   searchParams,
 }: {
@@ -9,7 +13,10 @@ export default async function EcommercePage({
 }) {
   const supabase = createServerClient()
 
-  const { data: products, error: productsError } = await supabase.from("products").select("*")
+  const { data: products, error: productsError } = await supabase
+    .from("products")
+    .select("*")
+    .order("created_at", { ascending: false })
   const { data: categories, error: categoriesError } = await supabase.from("categories").select("*")
 
   if (productsError) {

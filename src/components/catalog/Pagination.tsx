@@ -1,5 +1,7 @@
 "use client"
 
+import { useState, useEffect } from "react"
+
 interface PaginationProps {
   currentPage: number
   totalPages: number
@@ -7,11 +9,20 @@ interface PaginationProps {
 }
 
 export default function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
   if (totalPages <= 1) return null
 
   const getVisiblePages = () => {
     // Show fewer pages on mobile
-    const maxVisible = window.innerWidth < 640 ? 3 : 5
+    const maxVisible = isMobile ? 3 : 5
     return Array.from({ length: totalPages }, (_, i) => i + 1)
       .filter((p) => {
         if (totalPages <= maxVisible) return true
