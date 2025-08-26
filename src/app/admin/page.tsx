@@ -30,6 +30,7 @@ export default function AdminPanel() {
   const [formData, setFormData] = useState({
     name: '',
     price: '',
+    compare_at_price: '',
     description: '',
     stock: '',
     category_id: '',
@@ -133,6 +134,7 @@ export default function AdminPanel() {
         name: formData.name,
         description: formData.description,
         price: parseFloat(formData.price),
+        compare_at_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : null,
         category_id: formData.category_id, // Keep as string (UUID)
         stock: parseInt(formData.stock),
         images: allImages,
@@ -156,6 +158,7 @@ export default function AdminPanel() {
         name: "",
         description: "",
         price: "",
+        compare_at_price: "",
         category_id: "",
         stock: "",
         specs: {},
@@ -187,6 +190,7 @@ export default function AdminPanel() {
       name: product.name,
       description: product.description || "",
       price: product.price.toString(),
+      compare_at_price: (product as any).compare_at_price?.toString() || "",
       category_id: product.category_id?.toString() || "",
       stock: product.stock.toString(),
       specs: (product.specs && typeof product.specs === 'object' && !Array.isArray(product.specs)) 
@@ -245,7 +249,7 @@ export default function AdminPanel() {
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="price">Precio</Label>
+                  <Label htmlFor="price">Precio Actual</Label>
                   <Input
                     id="price"
                     type="number"
@@ -256,7 +260,21 @@ export default function AdminPanel() {
                     placeholder="ej: 89999"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    Precio sin puntos ni comas (ej: 89999 = $89.999)
+                    Precio de venta actual (ej: 89999 = $89.999)
+                  </p>
+                </div>
+                <div>
+                  <Label htmlFor="compare_at_price">Precio Original (Oferta)</Label>
+                  <Input
+                    id="compare_at_price"
+                    type="number"
+                    step="0.01"
+                    value={formData.compare_at_price}
+                    onChange={(e) => setFormData(prev => ({ ...prev, compare_at_price: e.target.value }))}
+                    placeholder="ej: 119999"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Precio original (opcional). Si es mayor al precio actual, se mostrará como oferta
                   </p>
                 </div>
                 <div>
@@ -416,6 +434,7 @@ export default function AdminPanel() {
                       name: "",
                       description: "",
                       price: "",
+                      compare_at_price: "",
                       category_id: "",
                       stock: "",
                       specs: {},
@@ -439,7 +458,15 @@ export default function AdminPanel() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
                 <h3 className="font-semibold text-sm sm:text-base line-clamp-2 flex-1">{product.name}</h3>
-                <Badge variant="secondary" className="self-start text-xs">${product.price}</Badge>
+                <div className="flex flex-col items-end gap-1">
+                  {(product as any).compare_at_price && (product as any).compare_at_price > product.price && (
+                    <div className="flex items-center gap-2">
+                      <Badge variant="destructive" className="text-xs">OFERTA</Badge>
+                      <span className="text-xs text-muted-foreground line-through">${(product as any).compare_at_price}</span>
+                    </div>
+                  )}
+                  <Badge variant="secondary" className="self-start text-xs">${product.price}</Badge>
+                </div>
               </div>
               
               <p className="text-xs sm:text-sm text-muted-foreground mb-3 line-clamp-2">

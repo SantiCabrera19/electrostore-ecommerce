@@ -36,10 +36,10 @@ export default function ProductCard({ product }: ProductCardProps) {
   const image = getProductMainImage(product.id, product.images as string[], (product as any).main_image)
   const specs = (product.specs ?? {}) as Record<string, unknown>
   
-  const originalPrice = typeof specs["original_price"] === "number" ? specs["original_price"] : undefined
+  const compareAtPrice = (product as any).compare_at_price
   const installments = typeof specs["installments"] === "string" ? specs["installments"] : undefined
-  const hasOffer = (typeof specs["has_offer"] === "boolean" && specs["has_offer"]) ||
-    (originalPrice && originalPrice > product.price) || false
+  const hasOffer = compareAtPrice && compareAtPrice > product.price
+  const discountPercentage = hasOffer ? Math.round(((compareAtPrice - product.price) / compareAtPrice) * 100) : 0
 
   const handleAddToCart = async () => {
     const { addToCart } = await import('@/lib/cart')
@@ -58,8 +58,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             />
           </Link>
           {hasOffer && (
-            <Badge className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-accent text-accent-foreground text-xs">
-              Oferta
+            <Badge className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-500 text-white text-xs font-semibold">
+              -{discountPercentage}%
             </Badge>
           )}
         </div>
@@ -78,9 +78,9 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
 
           <div className="mb-3 sm:mb-4 mt-auto">
-            {originalPrice && originalPrice > product.price && (
+            {hasOffer && (
               <p className="text-xs sm:text-sm text-muted-foreground line-through">
-                {formatPrice(originalPrice)}
+                {formatPrice(compareAtPrice)}
               </p>
             )}
             <p className="text-lg sm:text-2xl font-bold text-primary">{formatPrice(product.price)}</p>

@@ -16,10 +16,11 @@ function formatPrice(value: number) {
 
 export default function ProductInfo({ product, categoryName }: ProductInfoProps) {
   const specs = (product.specs ?? {}) as Record<string, unknown>
-  const originalPrice = typeof specs["original_price"] === "number" ? specs["original_price"] : undefined
+  const compareAtPrice = product.compare_at_price
   const installments = typeof specs["installments"] === "string" ? specs["installments"] : undefined
-  const discount = originalPrice && originalPrice > product.price
-    ? Math.round(((originalPrice - product.price) / originalPrice) * 100)
+  const hasOffer = compareAtPrice && compareAtPrice > product.price
+  const discount = hasOffer
+    ? Math.round(((compareAtPrice - product.price) / compareAtPrice) * 100)
     : 0
 
   const handleAddToCart = () => {
@@ -31,12 +32,12 @@ export default function ProductInfo({ product, categoryName }: ProductInfoProps)
       <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-foreground leading-tight">{product.name}</h1>
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-        {originalPrice && originalPrice > product.price && (
-          <span className="text-sm sm:text-base text-muted-foreground line-through">{formatPrice(originalPrice)}</span>
+        {hasOffer && (
+          <span className="text-sm sm:text-base text-muted-foreground line-through">{formatPrice(compareAtPrice)}</span>
         )}
         <div className="flex items-center gap-2">
           <span className="text-2xl sm:text-3xl font-bold text-primary">{formatPrice(product.price)}</span>
-          {discount > 0 && <Badge className="bg-accent text-accent-foreground text-xs">{discount}% OFF</Badge>}
+          {discount > 0 && <Badge className="bg-red-500 text-white text-xs font-semibold">{discount}% OFF</Badge>}
         </div>
       </div>
 
