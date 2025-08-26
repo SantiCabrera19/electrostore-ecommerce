@@ -36,7 +36,6 @@ export default async function EcommercePage({
   const currentPage = typeof searchParams.page === "string" ? parseInt(searchParams.page, 10) : 1
   const pageSize = 6
 
-  // Use selectedCategory as UUID directly (no conversion to number)
   const categoryId = selectedCategory
   
   const filteredProducts = categoryId
