@@ -173,18 +173,19 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-foreground mb-8">Finalizar Compra</h1>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-none sm:max-w-7xl">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 sm:mb-8">Finalizar Compra</h1>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
         {/* Checkout Form */}
         <Card>
           <CardHeader>
-            <CardTitle>Datos de Envío</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">Datos de Envío</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="fullName">Nombre completo *</Label>
                   <Input
@@ -226,7 +227,7 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="city">Ciudad *</Label>
                   <Input
@@ -284,25 +285,25 @@ export default function CheckoutPage() {
         </Card>
 
         {/* Order Summary */}
-        <Card>
+        <Card className="lg:sticky lg:top-4">
           <CardHeader>
-            <CardTitle>Resumen del Pedido</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">Resumen del Pedido</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4">
             {cartItems.map((item) => (
-              <div key={item.id} className="flex justify-between items-center py-2 border-b">
-                <div className="flex-1">
-                  <h4 className="font-medium">{item.product!.name}</h4>
-                  <p className="text-sm text-muted-foreground">Cantidad: {item.quantity}</p>
+              <div key={item.id} className="flex justify-between items-start gap-3 py-2 border-b">
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-sm sm:text-base line-clamp-2">{item.product!.name}</h4>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Cantidad: {item.quantity}</p>
                 </div>
-                <div className="text-right">
-                  <p className="font-medium">{formatPrice(item.product!.price * item.quantity)}</p>
+                <div className="text-right flex-shrink-0">
+                  <p className="font-medium text-sm sm:text-base">{formatPrice(item.product!.price * item.quantity)}</p>
                 </div>
               </div>
             ))}
             
-            <div className="pt-4 border-t">
-              <div className="flex justify-between text-lg font-bold">
+            <div className="pt-3 sm:pt-4 border-t">
+              <div className="flex justify-between text-base sm:text-lg font-bold">
                 <span>Total:</span>
                 <span className="text-primary">{formatPrice(getTotalPrice())}</span>
               </div>
@@ -318,6 +319,7 @@ export default function CheckoutPage() {
             </div>
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   )

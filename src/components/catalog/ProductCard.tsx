@@ -47,49 +47,49 @@ export default function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border">
-      <CardContent className="p-0">
+    <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border h-full flex flex-col">
+      <CardContent className="p-0 flex flex-col h-full">
         <div className="relative">
           <Link href={`/store/${slug}?id=${product.id}`}>
             <img
               src={image}
               alt={product.name}
-              className="w-full h-64 object-contain bg-gray-50 rounded-t-lg p-4"
+              className="w-full h-48 sm:h-56 lg:h-64 object-contain bg-gray-50 rounded-t-lg p-3 sm:p-4"
             />
           </Link>
           {hasOffer && (
-            <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground">
+            <Badge className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-accent text-accent-foreground text-xs">
               Oferta
             </Badge>
           )}
         </div>
 
-        <div className="p-6">
-          <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
+        <div className="p-4 sm:p-6 flex flex-col flex-grow">
+          <h3 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm sm:text-base">
             <Link href={`/store/${slug}?id=${product.id}`} className="hover:underline">
               {product.name}
             </Link>
           </h3>
 
           {product.description && (
-            <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 line-clamp-2 flex-grow">
               {product.description}
             </p>
           )}
 
-          <div className="mb-4">
+          <div className="mb-3 sm:mb-4 mt-auto">
             {originalPrice && originalPrice > product.price && (
-              <p className="text-sm text-muted-foreground line-through">
+              <p className="text-xs sm:text-sm text-muted-foreground line-through">
                 {formatPrice(originalPrice)}
               </p>
             )}
-            <p className="text-2xl font-bold text-primary">{formatPrice(product.price)}</p>
+            <p className="text-lg sm:text-2xl font-bold text-primary">{formatPrice(product.price)}</p>
             {installments && (
-              <p className="text-sm text-muted-foreground">{installments}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">{installments}</p>
             )}
           </div>
 
-          <Button className="btn-primary w-full" onClick={handleAddToCart}>
+          <Button className="btn-primary w-full text-sm sm:text-base py-2 sm:py-3" onClick={handleAddToCart}>
             Agregar al carrito
           </Button>
         </div>

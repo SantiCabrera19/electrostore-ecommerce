@@ -159,25 +159,26 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Panel de Administración</h1>
-        <Button onClick={() => setShowForm(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Agregar Producto
-        </Button>
-      </div>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-none sm:max-w-7xl">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 sm:mb-8">Panel de Administración</h1>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
+          <Button onClick={() => setShowForm(true)} className="self-start sm:self-auto">
+            <Plus className="h-4 w-4 mr-2" />
+            Agregar Producto
+          </Button>
+        </div>
 
       {showForm && (
-        <Card className="mb-8">
+        <Card className="mb-6 sm:mb-8">
           <CardHeader>
-            <CardTitle>
+            <CardTitle className="text-lg sm:text-xl">
               {editingProduct ? "Editar Producto" : "Nuevo Producto"}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="name">Nombre del Producto</Label>
                   <Input
@@ -267,13 +268,14 @@ export default function AdminPanel() {
                 </div>
               </div>
 
-              <div className="flex gap-2">
-                <Button type="submit">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
+                <Button type="submit" className="flex-1 sm:flex-none">
                   {editingProduct ? "Actualizar" : "Crear"} Producto
                 </Button>
                 <Button 
                   type="button" 
                   variant="outline" 
+                  className="flex-1 sm:flex-none"
                   onClick={() => {
                     setShowForm(false)
                     setEditingProduct(null)
@@ -297,16 +299,16 @@ export default function AdminPanel() {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {products.map((product) => (
           <Card key={product.id}>
-            <CardContent className="p-4">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-semibold truncate">{product.name}</h3>
-                <Badge variant="secondary">${product.price}</Badge>
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                <h3 className="font-semibold text-sm sm:text-base line-clamp-2 flex-1">{product.name}</h3>
+                <Badge variant="secondary" className="self-start text-xs">${product.price}</Badge>
               </div>
               
-              <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-3 line-clamp-2">
                 {product.description}
               </p>
               
@@ -319,6 +321,7 @@ export default function AdminPanel() {
                     size="sm"
                     variant="outline"
                     onClick={() => editProduct(product)}
+                    className="h-8 w-8 p-0"
                   >
                     <Edit className="h-3 w-3" />
                   </Button>
@@ -326,6 +329,7 @@ export default function AdminPanel() {
                     size="sm"
                     variant="destructive"
                     onClick={() => deleteProduct(product.id)}
+                    className="h-8 w-8 p-0"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -334,6 +338,7 @@ export default function AdminPanel() {
             </CardContent>
           </Card>
         ))}
+      </div>
       </div>
     </div>
   )

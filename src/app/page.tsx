@@ -48,15 +48,17 @@ export default async function EcommercePage({
   const pageProducts = filteredProducts.slice(start, end)
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <EcommercePageClient
-        products={pageProducts}
-        categories={categories || []}
-        selectedCategory={selectedCategory}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalProducts={filteredProducts.length}
-      />
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-none sm:max-w-7xl">
+        <EcommercePageClient
+          products={pageProducts}
+          categories={categories || []}
+          selectedCategory={selectedCategory}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalProducts={filteredProducts.length}
+        />
+      </div>
     </div>
   )
 }

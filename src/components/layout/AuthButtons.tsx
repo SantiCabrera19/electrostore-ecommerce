@@ -49,20 +49,34 @@ export default function AuthButtons({ user, onLogout }: AuthButtonsProps) {
 
     return (
       <>
-        <span className="text-sm text-white/90 font-medium">
+        {/* Desktop: Show full text */}
+        <span className="hidden sm:block text-sm text-white/90 font-medium">
           Hola, {displayName}
         </span>
         {isAdmin && (
-          <Button variant="ghost" size="sm" className="bg-white text-teal-600 hover:bg-gray-50 hover:text-teal-700 font-medium shadow-md" asChild>
+          <Button variant="ghost" size="sm" className="bg-white text-teal-600 hover:bg-gray-50 hover:text-teal-700 font-medium shadow-md hidden sm:inline-flex" asChild>
             <Link href="/admin">
               <Settings className="h-4 w-4 mr-2" />
               Admin
             </Link>
           </Button>
         )}
-        <Button variant="ghost" size="sm" className="bg-white text-teal-600 hover:bg-gray-50 hover:text-teal-700 font-medium shadow-md" onClick={onLogout}>
+        {/* Mobile: Icon only for admin */}
+        {isAdmin && (
+          <Button variant="ghost" size="sm" className="bg-white text-teal-600 hover:bg-gray-50 hover:text-teal-700 font-medium shadow-md sm:hidden p-2" asChild>
+            <Link href="/admin">
+              <Settings className="h-4 w-4" />
+            </Link>
+          </Button>
+        )}
+        {/* Desktop: Full logout button */}
+        <Button variant="ghost" size="sm" className="bg-white text-teal-600 hover:bg-gray-50 hover:text-teal-700 font-medium shadow-md hidden sm:inline-flex" onClick={onLogout}>
           <LogOut className="h-4 w-4 mr-2" />
           Cerrar sesión
+        </Button>
+        {/* Mobile: Icon only logout */}
+        <Button variant="ghost" size="sm" className="bg-white text-teal-600 hover:bg-gray-50 hover:text-teal-700 font-medium shadow-md sm:hidden p-2" onClick={onLogout}>
+          <LogOut className="h-4 w-4" />
         </Button>
       </>
     )
@@ -70,13 +84,23 @@ export default function AuthButtons({ user, onLogout }: AuthButtonsProps) {
 
   return (
     <>
-      <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 border border-white/30" asChild>
+      {/* Desktop: Full buttons */}
+      <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 border border-white/30 hidden sm:inline-flex" asChild>
         <Link href="/auth/register">Crea tu cuenta</Link>
       </Button>
-      <Button size="sm" className="bg-white text-teal-600 hover:bg-gray-100 font-medium shadow-md" asChild>
+      <Button size="sm" className="bg-white text-teal-600 hover:bg-gray-100 font-medium shadow-md hidden sm:inline-flex" asChild>
         <Link href="/auth/login">
           <User className="h-4 w-4 mr-2" />
           Ingresa
+        </Link>
+      </Button>
+      {/* Mobile: Compact buttons */}
+      <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 border border-white/30 sm:hidden text-xs px-2" asChild>
+        <Link href="/auth/register">Registro</Link>
+      </Button>
+      <Button size="sm" className="bg-white text-teal-600 hover:bg-gray-100 font-medium shadow-md sm:hidden p-2" asChild>
+        <Link href="/auth/login">
+          <User className="h-4 w-4" />
         </Link>
       </Button>
     </>

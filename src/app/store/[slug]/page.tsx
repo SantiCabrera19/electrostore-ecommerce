@@ -107,19 +107,23 @@ export default function ProductDetailPage({ params, searchParams }: PageProps) {
   const productImages = getAllProductImages(product.id)
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div className="text-sm text-muted-foreground mb-4">
-        <Link href="/" className="hover:underline">Inicio</Link> {">"}{" "}
-        {categoryName ? <span className="hover:underline">{categoryName}</span> : "Producto"}{" "}
-        {">"} <span className="text-foreground">{product.name}</span>
-      </div>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6">
+        <div className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 overflow-x-auto whitespace-nowrap">
+          <Link href="/" className="hover:underline">Inicio</Link> {">"}{" "}
+          {categoryName ? <span className="hover:underline">{categoryName}</span> : "Producto"}{" "}
+          {">"} <span className="text-foreground">{product.name}</span>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <ProductImageGallery images={productImages} productName={product.name} />
-        <ProductInfo product={product} categoryName={categoryName} />
-      </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+          <ProductImageGallery images={productImages} productName={product.name} />
+          <ProductInfo product={product} categoryName={categoryName} />
+        </div>
 
-      <ProductSpecs product={product} />
+        <div className="mt-6 sm:mt-8">
+          <ProductSpecs product={product} />
+        </div>
+      </div>
     </div>
   )
 }

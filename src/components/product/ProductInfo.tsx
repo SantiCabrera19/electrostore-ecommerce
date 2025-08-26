@@ -27,33 +27,38 @@ export default function ProductInfo({ product, categoryName }: ProductInfoProps)
   }
 
   return (
-    <div className="lg:sticky lg:top-24 self-start">
-      <h1 className="text-3xl font-semibold text-foreground mb-2">{product.name}</h1>
+    <div className="lg:sticky lg:top-24 self-start space-y-4 sm:space-y-6">
+      <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-foreground leading-tight">{product.name}</h1>
 
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
         {originalPrice && originalPrice > product.price && (
-          <span className="text-muted-foreground line-through">{formatPrice(originalPrice)}</span>
+          <span className="text-sm sm:text-base text-muted-foreground line-through">{formatPrice(originalPrice)}</span>
         )}
-        <span className="text-3xl font-bold text-primary">{formatPrice(product.price)}</span>
-        {discount > 0 && <Badge className="bg-accent text-accent-foreground">{discount}% OFF</Badge>}
+        <div className="flex items-center gap-2">
+          <span className="text-2xl sm:text-3xl font-bold text-primary">{formatPrice(product.price)}</span>
+          {discount > 0 && <Badge className="bg-accent text-accent-foreground text-xs">{discount}% OFF</Badge>}
+        </div>
       </div>
 
       {installments && (
-        <div className="text-sm text-muted-foreground mb-4">Precio en cuotas: {installments}</div>
+        <div className="text-sm text-muted-foreground">Precio en cuotas: {installments}</div>
       )}
 
-      <div className="flex gap-3 mb-6">
-        <Button className="btn-primary min-w-48" onClick={handleAddToCart}>
+      {/* Mobile: Stack buttons vertically, Desktop: Horizontal */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Button className="btn-primary flex-1 sm:min-w-48" onClick={handleAddToCart}>
           Agregar al carrito
         </Button>
-        <Button variant="secondary" className="btn-secondary">Favorito</Button>
-        <Button variant="secondary" className="btn-secondary">Compartir</Button>
+        <div className="flex gap-2 sm:gap-3">
+          <Button variant="secondary" className="btn-secondary flex-1 sm:flex-none">Favorito</Button>
+          <Button variant="secondary" className="btn-secondary flex-1 sm:flex-none">Compartir</Button>
+        </div>
       </div>
 
       <Card className="bg-card border-border shadow-sm">
-        <CardContent className="p-4">
-          <div className="font-medium text-foreground mb-2">¡Promos bancarias!</div>
-          <ul className="space-y-2 text-sm text-muted-foreground">
+        <CardContent className="p-3 sm:p-4">
+          <div className="font-medium text-foreground mb-2 text-sm sm:text-base">¡Promos bancarias!</div>
+          <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
             <li>12 cuotas sin interés</li>
             <li>18 cuotas con interés bajo</li>
             <li>Transferencia con 10% OFF</li>

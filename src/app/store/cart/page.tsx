@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react"
+import { getCart, updateCartQuantity, removeFromCart } from "@/lib/cart"
+import { getProductMainImage } from "@/lib/images"
 import { createBrowserClient } from '@/lib/supabase'
 import type { Tables } from '@/types/supabase'
 
@@ -131,37 +133,42 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-foreground mb-8">Mi Carrito</h1>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-none sm:max-w-7xl">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 sm:mb-8">Mi Carrito</h1>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
         {/* Cart Items */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-3 sm:space-y-4">
           {cartItems.map((item) => (
             <Card key={item.id} className="border-border">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0">
-                    <img
-                      src={item.product.images?.[0] || '/placeholder.svg'}
-                      alt={item.product.name}
-                      className="w-20 h-20 object-cover rounded-md"
-                    />
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                {/* Mobile: Stack vertically, Desktop: Horizontal */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="flex-shrink-0">
+                      <img
+                        src={getProductMainImage(item.product.id)}
+                        alt={item.product.name}
+                        className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-md"
+                      />
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-foreground mb-1 text-sm sm:text-base line-clamp-2">
+                        {item.product.name}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-2">
+                        {item.product.description}
+                      </p>
+                      <p className="text-base sm:text-lg font-bold text-primary">
+                        {formatPrice(item.product.price)}
+                      </p>
+                    </div>
                   </div>
                   
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-foreground mb-1">
-                      {item.product.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {item.product.description}
-                    </p>
-                    <p className="text-lg font-bold text-primary">
-                      {formatPrice(item.product.price)}
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
+                  {/* Mobile: Controls at bottom, Desktop: Right side */}
+                  <div className="flex items-center justify-between sm:justify-end gap-3 sm:flex-col sm:items-end lg:flex-row lg:items-center">
                     <div className="flex items-center border border-border rounded-md">
                       <Button
                         variant="ghost"
@@ -169,9 +176,9 @@ export default function CartPage() {
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         className="h-8 w-8 p-0"
                       >
-                        <Minus className="h-4 w-4" />
+                        <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
-                      <span className="px-3 py-1 text-sm font-medium">
+                      <span className="px-2 sm:px-3 py-1 text-sm font-medium min-w-[32px] text-center">
                         {item.quantity}
                       </span>
                       <Button
@@ -180,7 +187,7 @@ export default function CartPage() {
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         className="h-8 w-8 p-0"
                       >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                     </div>
                     
@@ -232,6 +239,7 @@ export default function CartPage() {
               </Button>
             </CardContent>
           </Card>
+        </div>
         </div>
       </div>
     </div>
