@@ -223,8 +223,8 @@ export default function CartPage() {
                 <span className="text-primary">{formatPrice(getTotalPrice())}</span>
               </div>
               
-              <Button className="w-full btn-primary" size="lg">
-                Continuar compra
+              <Button className="w-full btn-primary" size="lg" asChild>
+                <Link href="/store/checkout">Continuar compra</Link>
               </Button>
               
               <Button variant="outline" className="w-full" asChild>

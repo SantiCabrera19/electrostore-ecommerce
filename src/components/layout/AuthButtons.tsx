@@ -1,8 +1,10 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { User, LogOut } from "lucide-react"
+import { User, LogOut, Settings } from "lucide-react"
+import { createBrowserClient } from "@/lib/supabase"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 
 interface AuthButtonsProps {
@@ -10,17 +12,56 @@ interface AuthButtonsProps {
   onLogout: () => void
 }
 
+interface UserProfile {
+  full_name: string | null
+  role: string
+}
+
 export default function AuthButtons({ user, onLogout }: AuthButtonsProps) {
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const supabase = createBrowserClient()
+
+  useEffect(() => {
+    if (user && !userProfile) {
+      fetchUserProfile()
+    } else if (!user) {
+      setUserProfile(null)
+    }
+  }, [user, userProfile])
+
+  const fetchUserProfile = async () => {
+    if (!user) return
+
+    const { data, error } = await supabase
+      .from('users')
+      .select('full_name, role')
+      .eq('id', user.id)
+      .single()
+
+    if (data) {
+      setUserProfile(data)
+    }
+  }
+
   if (user) {
+    const displayName = userProfile?.full_name || user.email?.split('@')[0] || 'Usuario'
+    const isAdmin = userProfile?.role === 'admin'
+
     return (
       <>
-        <span className="text-sm text-white/80">
-          Hola, {user.email}
+        <span className="text-sm text-white/90 font-medium">
+          Hola, {displayName}
         </span>
-        <Button variant="ghost" size="sm" className="text-white hover:bg-white/10" asChild>
-          <Link href="/admin">Admin</Link>
-        </Button>
-        <Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10" onClick={onLogout}>
+        {isAdmin && (
+          <Button variant="ghost" size="sm" className="bg-white text-teal-600 hover:bg-gray-50 hover:text-teal-700 font-medium shadow-md" asChild>
+            <Link href="/admin">
+              <Settings className="h-4 w-4 mr-2" />
+              Admin
+            </Link>
+          </Button>
+        )}
+        <Button variant="ghost" size="sm" className="bg-white text-teal-600 hover:bg-gray-50 hover:text-teal-700 font-medium shadow-md" onClick={onLogout}>
+          <LogOut className="h-4 w-4 mr-2" />
           Cerrar sesión
         </Button>
       </>
