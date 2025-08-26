@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -9,7 +9,7 @@ import { CheckCircle, Package, Truck, CreditCard, Download } from 'lucide-react'
 import { createBrowserClient } from '@/lib/supabase'
 import { generateInvoicePDF } from '@/lib/pdf-generator'
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
   const [order, setOrder] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const searchParams = useSearchParams()
@@ -224,5 +224,17 @@ export default function OrderSuccessPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">Cargando...</div>
+      </div>
+    }>
+      <OrderSuccessContent />
+    </Suspense>
   )
 }
