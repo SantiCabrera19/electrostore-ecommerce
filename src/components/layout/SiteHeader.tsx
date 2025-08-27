@@ -36,21 +36,34 @@ export default function SiteHeader() {
       if (data) setCategories(data)
     })
 
-    import('@/lib/cart').then(({ getCartItemCount }) => {
+    // Load initial cart count
+    const loadCartCount = async () => {
+      const { getCartItemCount } = await import('@/lib/cart')
       setCartItemCount(getCartItemCount())
-    })
+    }
+    loadCartCount()
 
-    const handleCartUpdate = () => {
-      import('@/lib/cart').then(({ getCartItemCount }) => {
-        setCartItemCount(getCartItemCount())
-      })
+    const handleCartUpdate = async () => {
+      const { getCartItemCount } = await import('@/lib/cart')
+      const newCount = getCartItemCount()
+      setCartItemCount(newCount)
     }
 
+    // Listen for cart updates
     window.addEventListener('cartUpdated', handleCartUpdate)
+    
+    // Also listen for storage changes (in case cart is updated in another tab)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'electrostore_cart') {
+        handleCartUpdate()
+      }
+    }
+    window.addEventListener('storage', handleStorageChange)
 
     return () => {
       subscription.unsubscribe()
       window.removeEventListener('cartUpdated', handleCartUpdate)
+      window.removeEventListener('storage', handleStorageChange)
     }
   }, [])
 

@@ -1,9 +1,10 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, Playfair_Display } from "next/font/google"
+import { Inter } from "next/font/google"
 import "./globals.css"
 import SiteHeader from "@/components/layout/SiteHeader"
 import SiteFooter from "@/components/layout/SiteFooter"
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,18 +12,13 @@ const inter = Inter({
   variable: "--font-inter",
 })
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-playfair",
-})
 
 export const metadata: Metadata = {
-  title: "ElectroStore - Electrodomésticos y Más",
-  description: "Tu tienda online de electrodomésticos con los mejores precios y ofertas",
+  title: "ElectroStore - Tu tienda de electrónicos",
+  description: "Encuentra los mejores productos electrónicos al mejor precio",
   generator: "v0.app",
   icons: {
-    icon: "/electrostore_Logo.png",
+    icon: '/electrostore_Logo.png',
     shortcut: "/electrostore_Logo.png",
     apple: "/electrostore_Logo.png",
   },
@@ -34,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} ${playfair.variable} antialiased`}>
+    <html lang="es" className={inter.variable}>
       <body className="font-sans">
         <div className="min-h-screen flex flex-col">
           <SiteHeader />
@@ -44,6 +40,7 @@ export default function RootLayout({
           {/* import SiteFooter from "@/components/layout/SiteFooter" */}
           <SiteFooter />
         </div>
+        <Toaster />
       </body>
     </html>
   )

@@ -71,13 +71,16 @@ export default function CartPage() {
     }
   }
 
-  const updateCart = (items: CartItem[]) => {
-    setCartItems(items)
-    const cartData = items.map(item => ({
+  const updateCart = (updatedItems: CartItem[]) => {
+    setCartItems(updatedItems)
+    const cartData = updatedItems.map(item => ({
       productId: item.id,
       quantity: item.quantity
     }))
     localStorage.setItem('electrostore_cart', JSON.stringify(cartData))
+    
+    // Dispatch custom event to notify other components (like header)
+    window.dispatchEvent(new CustomEvent('cartUpdated', { detail: cartData }))
   }
 
   const updateQuantity = (productId: string, newQuantity: number) => {
