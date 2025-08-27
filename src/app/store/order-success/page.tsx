@@ -49,21 +49,21 @@ function OrderSuccessContent() {
     }
   }
 
-  const handleDownloadInvoice = () => {
+  const handleDownloadInvoice = async () => {
     if (!order) return
 
-    // Mock customer data - in real app, this would come from the order
+    // Use real customer data from the order
     const customerData = {
-      fullName: 'Cliente ElectroStore',
-      email: 'cliente@email.com',
-      phone: '+54 11 1234-5678',
-      address: 'Av. Corrientes 1234',
-      city: 'Buenos Aires',
-      province: 'Buenos Aires',
-      postalCode: '1043'
+      fullName: order.customer_name,
+      email: order.customer_email,
+      phone: order.customer_phone,
+      address: order.customer_address,
+      city: order.customer_city,
+      province: order.customer_province,
+      postalCode: order.customer_postal_code
     }
 
-    generateInvoicePDF(order, customerData)
+    await generateInvoicePDF(order, customerData)
   }
 
   const formatPrice = (price: number) => {

@@ -21,6 +21,11 @@ export const metadata: Metadata = {
   title: "ElectroStore - Electrodomésticos y Más",
   description: "Tu tienda online de electrodomésticos con los mejores precios y ofertas",
   generator: "v0.app",
+  icons: {
+    icon: "/electrostore_Logo.png",
+    shortcut: "/electrostore_Logo.png",
+    apple: "/electrostore_Logo.png",
+  },
 }
 
 export default function RootLayout({

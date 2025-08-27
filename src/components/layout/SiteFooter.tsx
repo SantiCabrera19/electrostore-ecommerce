@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Facebook, Instagram, Youtube, Twitter } from "lucide-react"
@@ -31,7 +32,16 @@ export default function SiteFooter() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand */}
           <div className="space-y-4">
-            <div className="text-2xl font-serif font-bold text-primary">ElectroStore</div>
+            <div className="flex items-center gap-2">
+              <Image 
+                src="/electrostore_Logo.png" 
+                alt="ElectroStore Logo" 
+                width={32} 
+                height={32} 
+                className="w-8 h-8"
+              />
+              <div className="text-2xl font-serif font-bold text-primary">ElectroStore</div>
+            </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Ofertas válidas por tiempo limitado o hasta agotar stock. Imágenes a modo ilustrativo.
               Precios y descripciones pueden variar sin previo aviso.

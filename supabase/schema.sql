@@ -71,6 +71,15 @@ CREATE TABLE IF NOT EXISTS public.orders (
   user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'cancelled')),
   total NUMERIC(10, 2) NOT NULL,
+  -- Datos del cliente para facturación
+  customer_name TEXT NOT NULL,
+  customer_email TEXT NOT NULL,
+  customer_phone TEXT NOT NULL,
+  customer_address TEXT NOT NULL,
+  customer_city TEXT NOT NULL,
+  customer_province TEXT NOT NULL,
+  customer_postal_code TEXT NOT NULL,
+  customer_notes TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE
 );

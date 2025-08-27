@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Search, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -65,7 +66,16 @@ export default function SiteHeader() {
           {/* Top row: Logo and Cart */}
           <div className="flex items-center justify-between py-3">
             <Link href="/" aria-label="Ir al inicio" className="inline-block">
-              <h1 className="text-xl font-bold text-white font-serif">ElectroStore</h1>
+              <div className="flex items-center gap-2">
+                <Image 
+                  src="/electrostore_Logo.png" 
+                  alt="ElectroStore Logo" 
+                  width={32} 
+                  height={32} 
+                  className="w-8 h-8"
+                />
+                <h1 className="text-lg font-bold text-white font-serif">ElectroStore</h1>
+              </div>
             </Link>
             
             <div className="flex items-center gap-2">
@@ -123,7 +133,16 @@ export default function SiteHeader() {
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link href="/" aria-label="Ir al inicio" className="inline-block">
-                <h1 className="text-2xl font-bold text-white font-serif">ElectroStore</h1>
+                <div className="flex items-center gap-3">
+                  <Image 
+                    src="/electrostore_Logo.png" 
+                    alt="ElectroStore Logo" 
+                    width={44} 
+                    height={44} 
+                    className="w-11 h-11"
+                  />
+                  <h1 className="text-2xl font-bold text-white font-serif">ElectroStore</h1>
+                </div>
               </Link>
             </div>
 

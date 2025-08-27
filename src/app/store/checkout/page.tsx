@@ -123,13 +123,26 @@ export default function CheckoutPage() {
         return
       }
 
-      // Create order in database
+      // Create order in database with customer data
+      const totalPrice = getTotalPrice()
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
           user_id: user.id,
           status: 'pending',
-          total: getTotalPrice()
+          currency_code: 'ARS',
+          subtotal: totalPrice,
+          discount_total: 0,
+          shipping_cost: 0,
+          total: totalPrice,
+          customer_name: formData.fullName,
+          customer_email: formData.email,
+          customer_phone: formData.phone,
+          customer_address: formData.address,
+          customer_city: formData.city,
+          customer_province: formData.province,
+          customer_postal_code: formData.postalCode,
+          customer_notes: formData.notes
         })
         .select()
         .single()
