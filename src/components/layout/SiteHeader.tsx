@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { createBrowserClient } from "@/lib/supabase"
 import AuthButtons from "./AuthButtons"
 import CategoriesDropdown from "./CategoriesDropdown"
+import SearchDropdown from "./SearchDropdown"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 import type { Tables } from "@/types/supabase"
 
@@ -17,6 +18,8 @@ export default function SiteHeader() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
   const [cartItemCount, setCartItemCount] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
   const supabase = createBrowserClient()
 
   useEffect(() => {
@@ -87,8 +90,16 @@ export default function SiteHeader() {
               <Input
                 type="search"
                 placeholder="Buscar productos..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
                 className="pl-10 pr-4 py-2 w-full rounded-lg border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                 aria-label="Buscar productos"
+              />
+              <SearchDropdown 
+                query={searchQuery}
+                isVisible={isSearchFocused && (searchQuery.length >= 2 || searchQuery.length === 0)}
+                onClose={() => setIsSearchFocused(false)}
               />
             </div>
           </div>
@@ -123,8 +134,16 @@ export default function SiteHeader() {
                 <Input
                   type="search"
                   placeholder="Buscar productos..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
                   className="pl-10 pr-4 py-2 w-full rounded-lg border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                   aria-label="Buscar productos"
+                />
+                <SearchDropdown 
+                  query={searchQuery}
+                  isVisible={isSearchFocused && (searchQuery.length >= 2 || searchQuery.length === 0)}
+                  onClose={() => setIsSearchFocused(false)}
                 />
               </div>
             </div>
@@ -156,6 +175,7 @@ export default function SiteHeader() {
           </div>
         </div>
       </div>
+      
     </header>
   )
 }

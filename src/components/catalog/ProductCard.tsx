@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import Image from "next/image"
+import { ShoppingCart } from "lucide-react"
 import { getProductMainImage } from "@/lib/images"
 import type { Tables } from '@/types/supabase'
 
@@ -46,52 +48,61 @@ export default function ProductCard({ product }: ProductCardProps) {
     addToCart(product.id)
   }
 
+  const mainImageUrl = image || '/placeholder-product.jpg'
+
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border h-full flex flex-col">
-      <CardContent className="p-0 flex flex-col h-full">
-        <div className="relative">
-          <Link href={`/store/${slug}?id=${product.id}`}>
-            <img
-              src={image}
+    <Card className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300">
+      <div className="relative aspect-square overflow-hidden bg-muted">
+        {hasOffer && (
+          <Badge className="absolute top-1 left-1 lg:top-2 lg:left-2 z-10 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs lg:text-sm">
+            -{discountPercentage}%
+          </Badge>
+        )}
+        
+        <Link href={`/products/${product.slug}`}>
+          <div className="relative w-full h-full">
+            <Image
+              src={mainImageUrl}
               alt={product.name}
-              className="w-full h-48 sm:h-56 lg:h-64 object-contain bg-gray-50 rounded-t-lg p-3 sm:p-4"
+              fill
+              className="object-contain group-hover:scale-105 transition-transform duration-300"
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 50vw, 33vw"
+              priority={true}
             />
-          </Link>
-          {hasOffer && (
-            <Badge className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-500 text-white text-xs font-semibold">
-              -{discountPercentage}%
-            </Badge>
-          )}
-        </div>
-
-        <div className="p-4 sm:p-6 flex flex-col flex-grow">
-          <h3 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm sm:text-base">
-            <Link href={`/store/${slug}?id=${product.id}`} className="hover:underline">
-              {product.name}
-            </Link>
-          </h3>
-
-          {product.description && (
-            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 line-clamp-2 flex-grow">
-              {product.description}
-            </p>
-          )}
-
-          <div className="mb-3 sm:mb-4 mt-auto">
-            {hasOffer && (
-              <p className="text-xs sm:text-sm text-muted-foreground line-through">
-                {formatPrice(compareAtPrice)}
-              </p>
-            )}
-            <p className="text-lg sm:text-2xl font-bold text-primary">{formatPrice(product.price)}</p>
-            {installments && (
-              <p className="text-xs sm:text-sm text-muted-foreground">{installments}</p>
-            )}
           </div>
+        </Link>
+      </div>
 
-          <Button className="btn-primary w-full text-sm sm:text-base py-2 sm:py-3" onClick={handleAddToCart}>
-            Agregar al carrito
-          </Button>
+      <CardContent className="p-2 lg:p-4">
+        <Link href={`/products/${product.slug}`} className="block">
+          <h3 className="font-semibold text-foreground mb-1 lg:mb-2 line-clamp-2 group-hover:text-primary transition-colors text-xs lg:text-base">
+            {product.name}
+          </h3>
+        </Link>
+
+        <div className="space-y-1 lg:space-y-2">
+          {hasOffer && (
+            <div className="flex items-center gap-1 lg:gap-2">
+              <span className="text-xs lg:text-sm text-muted-foreground line-through">
+                {formatPrice(compareAtPrice)}
+              </span>
+              <Badge variant="destructive" className="text-xs">
+                -{discountPercentage}%
+              </Badge>
+            </div>
+          )}
+          
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-1 lg:gap-0">
+            <span className="text-sm lg:text-lg font-bold text-primary">
+              {formatPrice(product.price)}
+            </span>
+            
+            <Button size="sm" className="bg-primary hover:bg-primary/90 text-xs lg:text-sm h-6 lg:h-8 px-2 lg:px-3" onClick={handleAddToCart}>
+              <ShoppingCart className="h-3 w-3 lg:h-4 lg:w-4 mr-1" />
+              <span className="hidden lg:inline">Agregar</span>
+              <span className="lg:hidden">+</span>
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -34,14 +34,31 @@ npm run dev
 
 Abre [http://localhost:3000](http://localhost:3000) en tu navegador para ver la aplicación.
 
-## Características del MVP
+## Características Implementadas
 
-- Home / catálogo de productos con filtros
-- Vista detallada de producto
+### 🛍️ Catálogo y Productos
+- **Catálogo de productos** con grid responsive (2 columnas en mobile, 3+ en desktop)
+- **Filtros avanzados**: por categoría, rango de precios y solo ofertas
+- **Paginación server-side** (6 productos por página)
+- **Sistema de ofertas** con badges de descuento y precios tachados
+- **Imágenes optimizadas** con manejo robusto de rutas
+
+### 🔍 Búsqueda Profesional
+- **Buscador en tiempo real** inspirado en Cetrogar
+- **Dropdown de resultados** sin overlay disruptivo
+- **Autocompletado** con sugerencias de categorías
+- **Resultados con precios y ofertas** mostrados elegantemente
+
+### 🛒 Carrito y Compras
 - Carrito de compras (agregar, eliminar, editar cantidades)
 - Checkout simulado
 - Generación de orden en Supabase
 - Pantalla de confirmación de orden
+
+### 📱 Diseño Responsive
+- **Mobile-first** con UI optimizada para dispositivos móviles
+- **Componentes adaptativos** que se ajustan a diferentes pantallas
+- **Navegación intuitiva** en todas las resoluciones
 
 ## Estructura del Proyecto
 

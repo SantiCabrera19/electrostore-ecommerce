@@ -16,6 +16,9 @@ type Props = {
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
+  onPriceFilter: (min: number, max: number) => void
+  onOffersToggle: (showOnlyOffers: boolean) => void
+  showOnlyOffers: boolean
 }
 
 export default function ProductGrid({
@@ -26,6 +29,9 @@ export default function ProductGrid({
   currentPage,
   totalPages,
   onPageChange,
+  onPriceFilter,
+  onOffersToggle,
+  showOnlyOffers,
 }: Props) {
 
   return (
@@ -38,15 +44,24 @@ export default function ProductGrid({
             products={products}
             selectedCategory={selectedCategory}
             filteredProducts={products}
+            onPriceFilter={onPriceFilter}
+            onOffersToggle={onOffersToggle}
+            showOnlyOffers={showOnlyOffers}
           />
         </div>
       </aside>
 
       <main className="flex-1 min-w-0">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
+          {products && products.length > 0 ? (
+            products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-8 text-muted-foreground">
+              No se encontraron productos
+            </div>
+          )}
         </div>
 
         <div className="mt-8">

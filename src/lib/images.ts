@@ -72,12 +72,17 @@ export const PRODUCT_IMAGES: Record<string, ProductImages> = {
 export function getProductMainImage(productId: string, productImages?: string[], mainImage?: string): string {
   // Si hay una imagen principal específica, usarla
   if (mainImage) {
-    return `/${mainImage}`
+    // Limpiar cualquier barra doble que pueda existir
+    const cleanImage = mainImage.replace(/^\/+/, '')
+    return `/${cleanImage}`
   }
   
   // Si el producto tiene imágenes subidas, usar la primera
   if (productImages && productImages.length > 0) {
-    return `/${productImages[0]}`
+    const firstImage = productImages[0]
+    // Limpiar cualquier barra doble que pueda existir
+    const cleanImage = firstImage.replace(/^\/+/, '')
+    return `/${cleanImage}`
   }
   
   // Fallback al sistema anterior para productos existentes
@@ -89,7 +94,10 @@ export function getProductMainImage(productId: string, productImages?: string[],
 export function getProductGallery(productId: string, productImages?: string[]): string[] {
   // Si el producto tiene imágenes subidas, usarlas
   if (productImages && productImages.length > 0) {
-    return productImages.map(img => `/${img}`)
+    return productImages.map(img => {
+      const cleanImage = img.replace(/^\/+/, '')
+      return `/${cleanImage}`
+    })
   }
   
   // Fallback al sistema anterior para productos existentes

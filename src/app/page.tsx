@@ -17,6 +17,7 @@ export default async function EcommercePage({
     .from("products")
     .select("*")
     .order("created_at", { ascending: false })
+  
   const { data: categories, error: categoriesError } = await supabase.from("categories").select("*")
 
   if (productsError) {
@@ -54,16 +55,16 @@ export default async function EcommercePage({
   const end = start + pageSize
   const pageProducts = filteredProducts.slice(start, end)
 
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-none sm:max-w-7xl">
         <EcommercePageClient
-          products={pageProducts}
+          initialProducts={pageProducts}
           categories={categories || []}
-          selectedCategory={selectedCategory}
-          currentPage={currentPage}
+          initialCategory={selectedCategory}
+          initialPage={currentPage}
           totalPages={totalPages}
-          totalProducts={filteredProducts.length}
         />
       </div>
     </div>
