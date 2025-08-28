@@ -35,7 +35,7 @@ function formatPrice(price: number) {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const slug = toSlug(product.name)
-  const image = getProductMainImage(product.id, product.images as string[], product.main_image)
+  const image = getProductMainImage(product.id, product.images as string[], product.main_image || undefined)
   const specs = (product.specs ?? {}) as Record<string, unknown>
   
   const compareAtPrice = product.compare_at_price
