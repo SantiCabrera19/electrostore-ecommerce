@@ -11,6 +11,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Debug: verificar token en producción
+    console.log('MP Token exists:', !!process.env.MERCADOPAGO_ACCESS_TOKEN)
+    console.log('MP Token prefix:', process.env.MERCADOPAGO_ACCESS_TOKEN?.substring(0, 8))
+    console.log('MP Token length:', process.env.MERCADOPAGO_ACCESS_TOKEN?.length)
+
     const body: CreatePreferenceData = await request.json()
 
     // Validar que tenemos items
