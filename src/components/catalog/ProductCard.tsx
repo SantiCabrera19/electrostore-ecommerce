@@ -35,10 +35,10 @@ function formatPrice(price: number) {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const slug = toSlug(product.name)
-  const image = getProductMainImage(product.id, product.images as string[], (product as any).main_image)
+  const image = getProductMainImage(product.id, product.images as string[], product.main_image)
   const specs = (product.specs ?? {}) as Record<string, unknown>
   
-  const compareAtPrice = (product as any).compare_at_price
+  const compareAtPrice = product.compare_at_price
   const installments = typeof specs["installments"] === "string" ? specs["installments"] : undefined
   const hasOffer = compareAtPrice && compareAtPrice > product.price
   const discountPercentage = hasOffer ? Math.round(((compareAtPrice - product.price) / compareAtPrice) * 100) : 0
