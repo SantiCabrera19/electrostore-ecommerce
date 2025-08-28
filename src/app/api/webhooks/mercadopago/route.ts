@@ -22,19 +22,15 @@ export async function POST(request: NextRequest) {
       date_created: body.date_created
     })
 
-    // Procesar eventos de Checkout API
+    // Procesar eventos de Checkout Pro
     switch (body.type) {
       case 'payment':
-        if (body.action === 'payment.created' || body.action === 'payment.updated') {
-          console.log(`Payment ${body.action}:`, body.data.id)
-          
-          // Aquí puedes obtener los detalles del pago si necesitas
-          // const paymentId = body.data.id
-          // const paymentDetails = await getPaymentDetails(paymentId)
-          
-          // Actualizar estado del pedido en tu base de datos
-          // await updateOrderStatus(paymentId, paymentDetails.status)
-        }
+        console.log('Payment event:', body.data.id)
+        // Aquí puedes actualizar el estado del pedido en tu base de datos
+        break
+      
+      case 'merchant_order':
+        console.log('Merchant order event:', body.data.id)
         break
       
       default:
@@ -56,7 +52,7 @@ export async function POST(request: NextRequest) {
 // Método GET para verificación del endpoint
 export async function GET() {
   return NextResponse.json({ 
-    message: 'Mercado Pago webhook endpoint is active (Checkout API)',
+    message: 'Mercado Pago webhook endpoint is active (Checkout Pro)',
     timestamp: new Date().toISOString()
   })
 }
