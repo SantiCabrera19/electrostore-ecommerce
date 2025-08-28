@@ -1,4 +1,4 @@
-import { MercadoPagoConfig, Preference } from 'mercadopago'
+import { MercadoPagoConfig } from 'mercadopago'
 
 // Configuración alternativa del cliente
 const client = new MercadoPagoConfig({
@@ -8,62 +8,46 @@ const client = new MercadoPagoConfig({
   }
 })
 
-// Cliente para crear preferencias de pago
-export const preference = new Preference(client)
-
-// Configuración para el frontend
+// Configuración para Checkout API
 export const MP_CONFIG = {
   publicKey: process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY!,
   locale: 'es-AR' as const,
   theme: {
-    elementsColor: '#10b981', // Verde de tu tema
+    elementsColor: '#10b981',
     headerColor: '#10b981'
   }
 }
 
-// Tipos para las preferencias
-export interface PaymentItem {
-  id: string
-  title: string
-  description?: string
-  picture_url?: string
-  category_id?: string
-  quantity: number
-  currency_id: 'ARS'
-  unit_price: number
-}
-
-export interface PaymentPayer {
-  name?: string
-  surname?: string
-  email?: string
-  phone?: {
-    area_code?: string
-    number?: string
-  }
-  identification?: {
-    type?: string
-    number?: string
-  }
-  address?: {
-    street_name?: string
-    street_number?: string
-    zip_code?: string
+// Tipos para Checkout API
+export interface PaymentData {
+  token: string
+  transaction_amount: number
+  installments: number
+  payment_method_id: string
+  payer: {
+    email: string
+    first_name?: string
+    last_name?: string
+    identification?: {
+      type: string
+      number: string
+    }
   }
 }
 
-export interface CreatePreferenceData {
-  items: PaymentItem[]
-  payer?: PaymentPayer
-  back_urls?: {
-    success?: string
-    failure?: string
-    pending?: string
+export interface PaymentResponse {
+  id: number
+  status: 'pending' | 'approved' | 'authorized' | 'in_process' | 'in_mediation' | 'rejected' | 'cancelled' | 'refunded' | 'charged_back'
+  status_detail: string
+  transaction_amount: number
+  currency_id: string
+  payment_method_id: string
+  installments: number
+  payer: {
+    email: string
+    first_name?: string
+    last_name?: string
   }
-  auto_return?: 'approved' | 'all'
-  external_reference?: string
-  notification_url?: string
-  expires?: boolean
-  expiration_date_from?: string
-  expiration_date_to?: string
+  date_created: string
+  date_approved?: string
 }

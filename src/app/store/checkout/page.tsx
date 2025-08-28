@@ -10,9 +10,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createBrowserClient } from '@/lib/supabase'
 import { getCart, clearCart } from '@/lib/cart'
-import MercadoPagoButton from '@/components/payments/MercadoPagoButton'
+import CheckoutAPI from '@/components/payments/CheckoutAPI'
 import type { Tables } from '@/types/supabase'
-import type { PaymentItem, PaymentPayer } from '@/lib/mercadopago'
 
 type CartItem = {
   id: string
@@ -110,32 +109,6 @@ export default function CheckoutPage() {
     return cartItems.reduce((total, item) => total + (item.product!.price * item.quantity), 0)
   }
 
-  // Preparar datos para Mercado Pago
-  const preparePaymentData = () => {
-    const items: PaymentItem[] = cartItems.map(item => ({
-      id: item.product!.id,
-      title: item.product!.name,
-      description: item.product!.description || '',
-      quantity: item.quantity,
-      currency_id: 'ARS',
-      unit_price: item.product!.price
-    }))
-
-    const payer: PaymentPayer = {
-      name: formData.fullName.split(' ')[0],
-      surname: formData.fullName.split(' ').slice(1).join(' '),
-      email: formData.email,
-      phone: {
-        number: formData.phone
-      },
-      address: {
-        street_name: formData.address,
-        zip_code: formData.postalCode
-      }
-    }
-
-    return { items, payer }
-  }
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -316,10 +289,25 @@ export default function CheckoutPage() {
 
               {/* Validar que el formulario esté completo */}
               {formData.fullName && formData.email && formData.phone && formData.address && formData.city && formData.province && formData.postalCode ? (
-                <MercadoPagoButton
-                  items={preparePaymentData().items}
-                  payer={preparePaymentData().payer}
-                  disabled={processing || cartItems.length === 0}
+                <CheckoutAPI
+                  amount={getTotalPrice()}
+                  description={`Compra en ElectroStore - ${cartItems.length} producto${cartItems.length > 1 ? 's' : ''}`}
+                  payer={{
+                    email: formData.email,
+                    first_name: formData.fullName.split(' ')[0],
+                    last_name: formData.fullName.split(' ').slice(1).join(' ')
+                  }}
+                  onSuccess={(payment) => {
+                    console.log('Payment successful:', payment)
+                    // Limpiar carrito
+                    clearCart()
+                    // Mostrar mensaje de éxito
+                    alert('Pago exitoso')
+                  }}
+                  onError={(error) => {
+                    console.error('Payment error:', error)
+                    alert('Error en el pago')
+                  }}
                 />
               ) : (
                 <div className="w-full p-4 bg-muted rounded-lg text-center">
