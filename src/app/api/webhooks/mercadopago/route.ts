@@ -2,7 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    // Obtener el texto del body primero
+    const text = await request.text()
+    
+    // Si el body está vacío, es una prueba de MP
+    if (!text || text.trim() === '') {
+      console.log('Mercado Pago test webhook received (empty body)')
+      return NextResponse.json({ received: true, test: true }, { status: 200 })
+    }
+    
+    // Parsear JSON solo si hay contenido
+    const body = JSON.parse(text)
     
     // Log del webhook para debugging
     console.log('Mercado Pago Webhook received:', {
