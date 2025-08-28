@@ -46,6 +46,8 @@ export default function CheckoutPage() {
     postalCode: '',
     notes: ''
   })
+  
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
 
   useEffect(() => {
     checkUser()
@@ -287,28 +289,94 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              {/* Validar que el formulario esté completo */}
+              {/* Selector de método de pago */}
               {formData.fullName && formData.email && formData.phone && formData.address && formData.city && formData.province && formData.postalCode ? (
-                <CheckoutAPI
-                  amount={getTotalPrice()}
-                  description={`Compra en ElectroStore - ${cartItems.length} producto${cartItems.length > 1 ? 's' : ''}`}
-                  payer={{
-                    email: formData.email,
-                    first_name: formData.fullName.split(' ')[0],
-                    last_name: formData.fullName.split(' ').slice(1).join(' ')
-                  }}
-                  onSuccess={(payment) => {
-                    console.log('Payment successful:', payment)
-                    // Limpiar carrito
-                    clearCart()
-                    // Mostrar mensaje de éxito
-                    alert('Pago exitoso')
-                  }}
-                  onError={(error) => {
-                    console.error('Payment error:', error)
-                    alert('Error en el pago')
-                  }}
-                />
+                <div className="space-y-4">
+                  <div>
+                    <Label>Método de Pago</Label>
+                    <div className="grid gap-3 mt-2">
+                      <div 
+                        className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                          selectedPaymentMethod === 'mercadopago' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+                        }`}
+                        onClick={() => setSelectedPaymentMethod('mercadopago')}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className="w-12 h-8 bg-[#009EE3] rounded flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">MP</span>
+                          </div>
+                          <div>
+                            <p className="font-medium">Mercado Pago</p>
+                            <p className="text-sm text-muted-foreground">Tarjetas, transferencias y más</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div 
+                        className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                          selectedPaymentMethod === 'transfer' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+                        }`}
+                        onClick={() => setSelectedPaymentMethod('transfer')}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className="w-12 h-8 bg-green-600 rounded flex items-center justify-center">
+                            <span className="text-white text-xs">🏦</span>
+                          </div>
+                          <div>
+                            <p className="font-medium">Transferencia Bancaria</p>
+                            <p className="text-sm text-muted-foreground">Pago directo desde tu banco</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mostrar formulario de pago según método seleccionado */}
+                  {selectedPaymentMethod === 'mercadopago' && (
+                    <CheckoutAPI
+                      amount={getTotalPrice()}
+                      description={`Compra en ElectroStore - ${cartItems.length} producto${cartItems.length > 1 ? 's' : ''}`}
+                      payer={{
+                        email: formData.email,
+                        first_name: formData.fullName.split(' ')[0],
+                        last_name: formData.fullName.split(' ').slice(1).join(' ')
+                      }}
+                      onSuccess={(payment) => {
+                        console.log('Payment successful:', payment)
+                        clearCart()
+                        alert('Pago exitoso')
+                      }}
+                      onError={(error) => {
+                        console.error('Payment error:', error)
+                        alert('Error en el pago')
+                      }}
+                    />
+                  )}
+
+                  {selectedPaymentMethod === 'transfer' && (
+                    <div className="p-4 bg-muted rounded-lg">
+                      <h4 className="font-medium mb-2">Datos para Transferencia</h4>
+                      <div className="space-y-1 text-sm">
+                        <p><strong>Banco:</strong> Banco Nación</p>
+                        <p><strong>CBU:</strong> 0110599520000012345678</p>
+                        <p><strong>Alias:</strong> ELECTROSTORE.PAGO</p>
+                        <p><strong>Titular:</strong> ElectroStore S.A.</p>
+                        <p><strong>Monto:</strong> {formatPrice(getTotalPrice())}</p>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Enviá el comprobante por WhatsApp al +54 9 11 1234-5678
+                      </p>
+                    </div>
+                  )}
+
+                  {!selectedPaymentMethod && (
+                    <div className="w-full p-4 bg-muted rounded-lg text-center">
+                      <p className="text-sm text-muted-foreground">
+                        Seleccioná un método de pago para continuar
+                      </p>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="w-full p-4 bg-muted rounded-lg text-center">
                   <p className="text-sm text-muted-foreground">
