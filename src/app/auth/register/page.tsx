@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { createBrowserClient } from '@/lib/supabase'
+import { createBrowserClient, getAuthRedirectUrl } from '@/lib/supabase'
+import { translateAuthMessage, getValidationMessage } from '@/lib/auth-translations'
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react'
 
 export default function RegisterPage() {
@@ -26,14 +27,30 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
 
-    if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden')
+    // Validaciones usando el sistema de traducciones
+    const fullNameError = getValidationMessage('fullName', fullName)
+    if (fullNameError) {
+      setError(fullNameError)
       setLoading(false)
       return
     }
 
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres')
+    const emailError = getValidationMessage('email', email)
+    if (emailError) {
+      setError(emailError)
+      setLoading(false)
+      return
+    }
+
+    const passwordError = getValidationMessage('password', password)
+    if (passwordError) {
+      setError(passwordError)
+      setLoading(false)
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError(translateAuthMessage('Passwords do not match'))
       setLoading(false)
       return
     }
@@ -46,12 +63,13 @@ export default function RegisterPage() {
         options: {
           data: {
             full_name: fullName,
-          }
+          },
+          emailRedirectTo: getAuthRedirectUrl()
         }
       })
 
       if (error) {
-        setError(error.message)
+        setError(translateAuthMessage(error.message))
         return
       }
 
@@ -160,7 +178,7 @@ export default function RegisterPage() {
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creando cuenta...' : 'Crear cuenta'}
+              {loading ? 'Creando cuenta...' : translateAuthMessage('Create Account')}
             </Button>
           </form>
 

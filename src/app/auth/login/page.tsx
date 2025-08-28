@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { createBrowserClient } from '@/lib/supabase'
+import { translateAuthMessage, getValidationMessage } from '@/lib/auth-translations'
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
 
 export default function LoginPage() {
@@ -31,7 +32,7 @@ export default function LoginPage() {
       })
 
       if (error) {
-        setError(error.message)
+        setError(translateAuthMessage(error.message))
         return
       }
 
@@ -101,7 +102,7 @@ export default function LoginPage() {
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Ingresando...' : 'Ingresar'}
+              {loading ? 'Ingresando...' : translateAuthMessage('Sign In')}
             </Button>
           </form>
 

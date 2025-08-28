@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { User, LogOut, Settings } from "lucide-react"
 import { createBrowserClient } from "@/lib/supabase"
+import { translateAuthMessage } from "@/lib/auth-translations"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 
 interface AuthButtonsProps {
@@ -72,7 +73,7 @@ export default function AuthButtons({ user, onLogout }: AuthButtonsProps) {
         {/* Desktop: Full logout button */}
         <Button variant="ghost" size="sm" className="bg-white text-teal-600 hover:bg-gray-50 hover:text-teal-700 font-medium shadow-md hidden sm:inline-flex" onClick={onLogout}>
           <LogOut className="h-4 w-4 mr-2" />
-          Cerrar sesión
+          {translateAuthMessage('Sign Out')}
         </Button>
         {/* Mobile: Icon only logout */}
         <Button variant="ghost" size="sm" className="bg-white text-teal-600 hover:bg-gray-50 hover:text-teal-700 font-medium shadow-md sm:hidden p-2" onClick={onLogout}>
@@ -86,12 +87,12 @@ export default function AuthButtons({ user, onLogout }: AuthButtonsProps) {
     <>
       {/* Desktop: Full buttons */}
       <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 border border-white/30 hidden sm:inline-flex" asChild>
-        <Link href="/auth/register">Crea tu cuenta</Link>
+        <Link href="/auth/register">{translateAuthMessage('Create Account')}</Link>
       </Button>
       <Button size="sm" className="bg-white text-teal-600 hover:bg-gray-100 font-medium shadow-md hidden sm:inline-flex" asChild>
         <Link href="/auth/login">
           <User className="h-4 w-4 mr-2" />
-          Ingresa
+          {translateAuthMessage('Sign In')}
         </Link>
       </Button>
       {/* Mobile: Compact buttons */}

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { createBrowserClient } from '@/lib/supabase'
 import { getCart, clearCart } from '@/lib/cart'
 import MercadoPagoButton from '@/components/payments/MercadoPagoButton'
+import AuthGuard from '@/components/auth/AuthGuard'
 import type { Tables } from '@/types/supabase'
 
 type CartItem = {
@@ -216,9 +217,10 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-none sm:max-w-7xl">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 sm:mb-8">Finalizar Compra</h1>
+    <AuthGuard requireAuth={true} showLoginPrompt={true}>
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-none sm:max-w-7xl">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 sm:mb-8">Finalizar Compra</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
         {/* Checkout Form */}
@@ -381,5 +383,6 @@ export default function CheckoutPage() {
       </div>
       </div>
     </div>
+    </AuthGuard>
   )
 }
