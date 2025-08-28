@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Configurar URLs de retorno
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '')
     
     const preferenceData = {
       items: body.items,
