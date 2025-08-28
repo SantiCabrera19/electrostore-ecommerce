@@ -6,7 +6,17 @@ import { v4 as uuidv4 } from 'uuid'
 export async function POST(request: NextRequest) {
   try {
     const data = await request.formData()
-    const files: File[] = data.getAll('files') as File[]
+    
+    // Try to get 'file' (singular) first, then 'files' (plural) for compatibility
+    let files: File[] = []
+    const singleFile = data.get('file') as File
+    const multipleFiles = data.getAll('files') as File[]
+    
+    if (singleFile) {
+      files = [singleFile]
+    } else if (multipleFiles && multipleFiles.length > 0) {
+      files = multipleFiles
+    }
     
     if (!files || files.length === 0) {
       return NextResponse.json({ error: 'No files received' }, { status: 400 })
@@ -35,7 +45,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ 
       message: 'Files uploaded successfully',
-      files: uploadedFiles 
+      files: uploadedFiles,
+      url: uploadedFiles[0] // For single file compatibility
     })
   } catch (error) {
     console.error('Error uploading files:', error)
