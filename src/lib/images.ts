@@ -72,7 +72,11 @@ export const PRODUCT_IMAGES: Record<string, ProductImages> = {
 export function getProductMainImage(productId: string, productImages?: string[], mainImage?: string): string {
   // Si hay una imagen principal específica, usarla
   if (mainImage) {
-    // Limpiar cualquier barra doble que pueda existir
+    // Si ya es una URL completa (Supabase Storage), devolverla tal como está
+    if (mainImage.startsWith('http')) {
+      return mainImage
+    }
+    // Si es un filename local, agregar la barra
     const cleanImage = mainImage.replace(/^\/+/, '')
     return `/${cleanImage}`
   }
@@ -80,7 +84,11 @@ export function getProductMainImage(productId: string, productImages?: string[],
   // Si el producto tiene imágenes subidas, usar la primera
   if (productImages && productImages.length > 0) {
     const firstImage = productImages[0]
-    // Limpiar cualquier barra doble que pueda existir
+    // Si ya es una URL completa (Supabase Storage), devolverla tal como está
+    if (firstImage.startsWith('http')) {
+      return firstImage
+    }
+    // Si es un filename local, agregar la barra
     const cleanImage = firstImage.replace(/^\/+/, '')
     return `/${cleanImage}`
   }
@@ -95,6 +103,11 @@ export function getProductGallery(productId: string, productImages?: string[]): 
   // Si el producto tiene imágenes subidas, usarlas
   if (productImages && productImages.length > 0) {
     return productImages.map(img => {
+      // Si ya es una URL completa (Supabase Storage), devolverla tal como está
+      if (img.startsWith('http')) {
+        return img
+      }
+      // Si es un filename local, agregar la barra
       const cleanImage = img.replace(/^\/+/, '')
       return `/${cleanImage}`
     })
