@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Clock, Package, Home } from 'lucide-react'
 
-export default function PaymentPendingPage() {
+function PaymentPendingContent() {
   const searchParams = useSearchParams()
   const [paymentData, setPaymentData] = useState<any>(null)
 
@@ -71,5 +71,21 @@ export default function PaymentPendingPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function PaymentPendingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <div className="animate-pulse">Cargando...</div>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <PaymentPendingContent />
+    </Suspense>
   )
 }
