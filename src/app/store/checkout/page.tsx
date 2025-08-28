@@ -10,7 +10,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createBrowserClient } from '@/lib/supabase'
 import { getCart, clearCart } from '@/lib/cart'
+import MercadoPagoButton from '@/components/payments/MercadoPagoButton'
 import type { Tables } from '@/types/supabase'
+import type { PaymentItem, PaymentPayer } from '@/lib/mercadopago'
 
 type CartItem = {
   id: string
@@ -106,6 +108,33 @@ export default function CheckoutPage() {
 
   const getTotalPrice = () => {
     return cartItems.reduce((total, item) => total + (item.product!.price * item.quantity), 0)
+  }
+
+  // Preparar datos para Mercado Pago
+  const preparePaymentData = () => {
+    const items: PaymentItem[] = cartItems.map(item => ({
+      id: item.product!.id,
+      title: item.product!.name,
+      description: item.product!.description || '',
+      quantity: item.quantity,
+      currency_id: 'ARS',
+      unit_price: item.product!.price
+    }))
+
+    const payer: PaymentPayer = {
+      name: formData.fullName.split(' ')[0],
+      surname: formData.fullName.split(' ').slice(1).join(' '),
+      email: formData.email,
+      phone: {
+        number: formData.phone
+      },
+      address: {
+        street_name: formData.address,
+        zip_code: formData.postalCode
+      }
+    }
+
+    return { items, payer }
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -285,14 +314,20 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full btn-primary" 
-                size="lg"
-                disabled={processing}
-              >
-                {processing ? 'Procesando...' : `Confirmar Pedido - ${formatPrice(getTotalPrice())}`}
-              </Button>
+              {/* Validar que el formulario esté completo */}
+              {formData.fullName && formData.email && formData.phone && formData.address && formData.city && formData.province && formData.postalCode ? (
+                <MercadoPagoButton
+                  items={preparePaymentData().items}
+                  payer={preparePaymentData().payer}
+                  disabled={processing || cartItems.length === 0}
+                />
+              ) : (
+                <div className="w-full p-4 bg-muted rounded-lg text-center">
+                  <p className="text-sm text-muted-foreground">
+                    Completá todos los campos obligatorios para continuar con el pago
+                  </p>
+                </div>
+              )}
             </form>
           </CardContent>
         </Card>
@@ -323,12 +358,16 @@ export default function CheckoutPage() {
             </div>
 
             <div className="bg-muted p-4 rounded-lg">
-              <h4 className="font-medium mb-2">Métodos de Pago</h4>
+              <h4 className="font-medium mb-2">Métodos de Pago Disponibles</h4>
               <ul className="text-sm space-y-1">
-                <li>💳 Tarjeta de crédito/débito</li>
+                <li>💳 Tarjetas de crédito y débito</li>
                 <li>🏦 Transferencia bancaria</li>
-                <li>💰 Efectivo contra entrega</li>
+                <li>💰 Efectivo (Rapipago, Pago Fácil)</li>
+                <li>📱 Mercado Pago y billeteras digitales</li>
               </ul>
+              <p className="text-xs text-muted-foreground mt-2">
+                Hasta 12 cuotas sin interés con tarjetas seleccionadas
+              </p>
             </div>
           </CardContent>
         </Card>
