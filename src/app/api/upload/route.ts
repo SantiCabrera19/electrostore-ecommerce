@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
+import { createClient } from '@supabase/supabase-js'
 import { v4 as uuidv4 } from 'uuid'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,17 +34,30 @@ export async function POST(request: NextRequest) {
       }
 
       const bytes = await file.arrayBuffer()
-      const buffer = Buffer.from(bytes)
-
+      
       // Generate unique filename
       const fileExtension = file.name.split('.').pop()
       const uniqueFilename = `${uuidv4()}.${fileExtension}`
       
-      // Save to public directory
-      const publicPath = join(process.cwd(), 'public', uniqueFilename)
-      await writeFile(publicPath, buffer)
+      // Upload to Supabase Storage
+      const { data: uploadData, error } = await supabase.storage
+        .from('product-images')
+        .upload(uniqueFilename, bytes, {
+          contentType: file.type,
+          upsert: false
+        })
+
+      if (error) {
+        console.error('Supabase upload error:', error)
+        throw new Error(`Failed to upload ${file.name}: ${error.message}`)
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(uniqueFilename)
       
-      uploadedFiles.push(uniqueFilename)
+      uploadedFiles.push(publicUrl)
     }
 
     return NextResponse.json({ 
