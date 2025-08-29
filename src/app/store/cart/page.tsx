@@ -47,25 +47,75 @@ export default function CartPage() {
       const cartData = localStorage.getItem('electrostore_cart')
       if (cartData) {
         const cart = JSON.parse(cartData)
+        
+        // Filter out invalid cart items
+        const validCartItems = cart.filter((item: any) => 
+          item.productId && 
+          typeof item.productId === 'string' && 
+          item.productId.length > 0 &&
+          typeof item.quantity === 'number' &&
+          item.quantity > 0
+        )
+        
+        if (validCartItems.length === 0) {
+          setCartItems([])
+          localStorage.removeItem('electrostore_cart')
+          window.dispatchEvent(new CustomEvent('cartUpdated', { detail: [] }))
+          return
+        }
+        
+        // Update localStorage if we filtered out invalid items
+        if (validCartItems.length !== cart.length) {
+          localStorage.setItem('electrostore_cart', JSON.stringify(validCartItems))
+        }
+        
         const itemsWithProducts = await Promise.all(
-          cart.map(async (item: any) => {
-            const { data: product } = await supabase
-              .from('products')
-              .select('*')
-              .eq('id', item.productId)
-              .single()
-            
-            return {
-              id: item.productId,
-              product,
-              quantity: item.quantity
+          validCartItems.map(async (item: any) => {
+            try {
+              const { data: product, error } = await supabase
+                .from('products')
+                .select('*')
+                .eq('id', item.productId)
+                .single()
+              
+              if (error) {
+                console.warn(`Product not found: ${item.productId}`, error)
+                return null
+              }
+              
+              return {
+                id: item.productId,
+                product,
+                quantity: item.quantity
+              }
+            } catch (error) {
+              console.warn(`Error fetching product ${item.productId}:`, error)
+              return null
             }
           })
         )
-        setCartItems(itemsWithProducts.filter(item => item.product))
+        
+        const validItems = itemsWithProducts.filter(item => item && item.product)
+        setCartItems(validItems as CartItem[])
+        
+        // If some products were not found, update the cart
+        if (validItems.length !== validCartItems.length) {
+          const updatedCart = validItems.map(item => ({
+            productId: item!.id,
+            quantity: item!.quantity
+          }))
+          localStorage.setItem('electrostore_cart', JSON.stringify(updatedCart))
+          window.dispatchEvent(new CustomEvent('cartUpdated', { detail: updatedCart }))
+        }
+      } else {
+        setCartItems([])
       }
     } catch (error) {
       console.error('Error loading cart:', error)
+      // Clear corrupted cart data
+      localStorage.removeItem('electrostore_cart')
+      setCartItems([])
+      window.dispatchEvent(new CustomEvent('cartUpdated', { detail: [] }))
     } finally {
       setLoading(false)
     }

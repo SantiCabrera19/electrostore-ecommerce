@@ -56,7 +56,29 @@ export function updateCartQuantity(productId: string, quantity: number): void {
 }
 
 export function getCartItemCount(): number {
-  return getCart().reduce((total, item) => total + item.quantity, 0)
+  try {
+    const cart = getCart()
+    // Validate cart items have valid productId (UUID format)
+    const validCart = cart.filter(item => 
+      item.productId && 
+      typeof item.productId === 'string' && 
+      item.productId.length > 0 &&
+      typeof item.quantity === 'number' &&
+      item.quantity > 0
+    )
+    
+    // If we filtered out invalid items, update localStorage
+    if (validCart.length !== cart.length) {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(validCart))
+    }
+    
+    return validCart.reduce((total, item) => total + item.quantity, 0)
+  } catch (error) {
+    console.error('Error getting cart count:', error)
+    // Clear corrupted cart data
+    localStorage.removeItem(CART_STORAGE_KEY)
+    return 0
+  }
 }
 
 export function clearCart(): void {
