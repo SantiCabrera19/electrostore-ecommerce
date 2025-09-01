@@ -69,20 +69,29 @@ export const PRODUCT_IMAGES: Record<string, ProductImages> = {
 }
 
 // Función para obtener imagen principal de un producto
-export function getProductMainImage(productId: string, productImages?: string[], mainImage?: string): string {
-  // Si hay una imagen principal específica, usarla
+export function getProductMainImage(productId: string, productImages?: string[], mainImage?: string, thumbnailUrl?: string): string {
+  // Nueva estrategia: thumbnail_url es la fuente de verdad para la portada
+  if (thumbnailUrl) {
+    // console.log('✅ Using thumbnail_url as main:', thumbnailUrl)
+    if (thumbnailUrl.startsWith('http')) {
+      return thumbnailUrl
+    }
+    const cleanImage = thumbnailUrl.replace(/^\/+/, '')
+    return `/${cleanImage}`
+  }
+  // Mantener compatibilidad: si algún producto viejo tiene main_image, úsalo
   if (mainImage) {
-    // Si ya es una URL completa (Supabase Storage), devolverla tal como está
+    // console.log('✅ Using legacy main_image:', mainImage)
     if (mainImage.startsWith('http')) {
       return mainImage
     }
-    // Si es un filename local, agregar la barra
     const cleanImage = mainImage.replace(/^\/+/, '')
     return `/${cleanImage}`
   }
   
-  // Si el producto tiene imágenes subidas, usar la primera
+  // PRIORIDAD 2: Si el producto tiene imágenes subidas pero no hay main_image, usar la primera
   if (productImages && productImages.length > 0) {
+    // console.warn('⚠️ No thumbnail/main image found, using first image:', productImages[0])
     const firstImage = productImages[0]
     // Si ya es una URL completa (Supabase Storage), devolverla tal como está
     if (firstImage.startsWith('http')) {

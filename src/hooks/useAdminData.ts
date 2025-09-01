@@ -58,24 +58,8 @@ export function useAdminData() {
     try {
       setError(null)
 
-      // Upload images first
-      const imageUrls: string[] = []
-      for (const file of uploadedImages) {
-        const formDataUpload = new FormData()
-        formDataUpload.append('file', file)
-        
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formDataUpload,
-        })
-        
-        if (!response.ok) {
-          throw new Error('Error uploading image')
-        }
-        
-        const result = await response.json()
-        imageUrls.push(result.url)
-      }
+      // Images are already uploaded by ImageUploader component
+      const imageUrls: string[] = (formData.images || []).filter(Boolean)
 
       // Create product
       const { data, error } = await supabase
@@ -88,7 +72,8 @@ export function useAdminData() {
           stock: parseInt(formData.stock),
           category_id: formData.category_id,
           images: imageUrls,
-          main_image: formData.main_image || (imageUrls.length > 0 ? imageUrls[0] : null),
+          main_image: formData.main_image,
+          thumbnail_url: formData.main_image || imageUrls[0] || null,
           specs: formData.specs,
           active: true
         })
@@ -143,7 +128,8 @@ export function useAdminData() {
           stock: parseInt(formData.stock),
           category_id: formData.category_id,
           images: allImages,
-          main_image: formData.main_image || (allImages.length > 0 ? allImages[0] : null),
+          main_image: formData.main_image,
+          thumbnail_url: formData.main_image || allImages[0] || null,
           specs: formData.specs
         })
         .eq('id', id)
@@ -206,11 +192,62 @@ export function useAdminData() {
   }
 
   const getStats = () => {
+    const activeProducts = products.filter(p => p.active)
+    const inactiveProducts = products.filter(p => !p.active)
+    const lowStockProducts = products.filter(p => p.stock <= 5)
+    const outOfStockProducts = products.filter(p => p.stock === 0)
+    
+    // Agrupar productos por categoría
+    const productsByCategory = categories.map(category => ({
+      name: category.name,
+      count: products.filter(p => p.category_id === category.id).length
+    }))
+
     return {
       totalProducts: products.length,
-      totalOrders: 0, // TODO: Implement when orders table is ready
-      totalRevenue: 0, // TODO: Calculate from orders
-      totalCustomers: 0 // TODO: Get from auth users
+      activeProducts: activeProducts.length,
+      inactiveProducts: inactiveProducts.length,
+      lowStockProducts: lowStockProducts.length,
+      outOfStockProducts: outOfStockProducts.length,
+      productsByCategory,
+      totalValue: products.reduce((sum, p) => sum + (p.price * p.stock), 0)
+    }
+  }
+
+  const bulkCreateProducts = async (productsData: ProductFormData[]) => {
+    try {
+      setError(null)
+      const createdProducts: Product[] = []
+
+      for (const productData of productsData) {
+        const { data, error } = await supabase
+          .from('products')
+          .insert({
+            name: productData.name,
+            price: parseFloat(productData.price.toString()),
+            compare_at_price: productData.compare_at_price ? parseFloat(productData.compare_at_price.toString()) : null,
+            description: productData.description || null,
+            stock: parseInt(productData.stock.toString()),
+            category_id: productData.category_id,
+            images: productData.images || [],
+            main_image: productData.main_image || null,
+            specs: productData.specs || {},
+            active: true
+          })
+          .select()
+          .single()
+
+        if (error) throw error
+        createdProducts.push(data)
+      }
+
+      setProducts(prev => [...createdProducts, ...prev])
+      return createdProducts
+    } catch (err) {
+      console.error('Error bulk creating products:', err)
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido'
+      setError(errorMessage)
+      throw new Error(errorMessage)
     }
   }
 
@@ -223,6 +260,7 @@ export function useAdminData() {
     updateProduct,
     deleteProduct,
     toggleProductVisibility,
+    bulkCreateProducts,
     getStats,
     refreshData: loadData
   }

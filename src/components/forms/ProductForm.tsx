@@ -66,6 +66,10 @@ export default function ProductForm({
   const handleImagesChange = (images: string[], mainImage: string) => {
     onInputChange('images', images)
     onInputChange('main_image', mainImage)
+    // También guardar en thumbnail_url como backup
+    if (mainImage) {
+      // noop here; thumbnail_url is set elsewhere based on main_image
+    }
   }
 
   return (

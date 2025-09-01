@@ -2,13 +2,16 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Plus, Package, Users, ShoppingCart, TrendingUp } from 'lucide-react'
+import { Plus, Package, Eye, EyeOff, AlertTriangle, DollarSign } from 'lucide-react'
 
 interface AdminStats {
   totalProducts: number
-  totalOrders: number
-  totalRevenue: number
-  totalCustomers: number
+  activeProducts: number
+  inactiveProducts: number
+  lowStockProducts: number
+  outOfStockProducts: number
+  productsByCategory: { name: string; count: number }[]
+  totalValue: number
 }
 
 interface AdminHeaderProps {
@@ -48,39 +51,39 @@ export default function AdminHeader({ stats, onNewProduct }: AdminHeaderProps) {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pedidos</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Productos Activos</CardTitle>
+            <Eye className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalOrders}</div>
+            <div className="text-2xl font-bold text-green-600">{stats.activeProducts}</div>
             <p className="text-xs text-muted-foreground">
-              Pedidos procesados
+              Visibles en tienda
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ingresos</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Stock Bajo</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats.totalRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-orange-500">{stats.lowStockProducts}</div>
             <p className="text-xs text-muted-foreground">
-              Ingresos totales
+              5 unidades o menos
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Clientes</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Valor Inventario</CardTitle>
+            <DollarSign className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalCustomers}</div>
+            <div className="text-2xl font-bold text-blue-600">${stats.totalValue.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              Usuarios registrados
+              Valor total en stock
             </p>
           </CardContent>
         </Card>

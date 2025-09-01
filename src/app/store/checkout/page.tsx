@@ -323,7 +323,7 @@ export default function CheckoutPage() {
                   items={preparePaymentData().items}
                   payer={preparePaymentData().payer}
                   onSuccess={(preferenceId) => {
-                    console.log('Payment preference created:', preferenceId)
+                    // success callback retained without noisy logging
                   }}
                   onError={(error) => {
                     console.error('Payment error:', error)

@@ -31,24 +31,26 @@ export default function ProductGrid({
   const [stockFilter, setStockFilter] = useState<string>('all')
   const [visibilityFilter, setVisibilityFilter] = useState<string>('all')
 
-  // Filter products based on search and filters
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false)
-    
-    const matchesCategory = selectedCategory === 'all' || product.category_id === selectedCategory
-    
-    const matchesStock = stockFilter === 'all' || 
-                        (stockFilter === 'in-stock' && product.stock > 0) ||
-                        (stockFilter === 'low-stock' && product.stock > 0 && product.stock <= 10) ||
-                        (stockFilter === 'out-of-stock' && product.stock === 0)
-    
-    const matchesVisibility = visibilityFilter === 'all' ||
-                             (visibilityFilter === 'visible' && product.active) ||
-                             (visibilityFilter === 'hidden' && !product.active)
+  // Filter and sort products - newest first
+  const filteredProducts = products
+    .filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false)
+      
+      const matchesCategory = selectedCategory === 'all' || product.category_id === selectedCategory
+      
+      const matchesStock = stockFilter === 'all' || 
+                          (stockFilter === 'in-stock' && product.stock > 0) ||
+                          (stockFilter === 'low-stock' && product.stock > 0 && product.stock <= 10) ||
+                          (stockFilter === 'out-of-stock' && product.stock === 0)
+      
+      const matchesVisibility = visibilityFilter === 'all' ||
+                               (visibilityFilter === 'visible' && product.active) ||
+                               (visibilityFilter === 'hidden' && !product.active)
 
-    return matchesSearch && matchesCategory && matchesStock && matchesVisibility
-  })
+      return matchesSearch && matchesCategory && matchesStock && matchesVisibility
+    })
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
   const stats = {
     total: products.length,

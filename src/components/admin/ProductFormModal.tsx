@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Plus, Trash2 } from 'lucide-react'
+import ImageUploader from '@/components/forms/ImageUploader'
 import type { Database } from '@/types/supabase'
 
 type Product = Database["public"]["Tables"]["products"]["Row"]
@@ -56,6 +57,19 @@ export default function ProductFormModal({
 }: ProductFormModalProps) {
   const [newSpecKey, setNewSpecKey] = useState('')
   const [newSpecValue, setNewSpecValue] = useState('')
+  const formRef = useRef<HTMLDivElement>(null)
+
+  // Scroll to form when it opens
+  useEffect(() => {
+    if (show && formRef.current) {
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        })
+      }, 100)
+    }
+  }, [show])
 
   const handleInputChange = (field: keyof ProductFormData, value: string) => {
     onFormDataChange({ ...formData, [field]: value })
@@ -81,7 +95,7 @@ export default function ProductFormModal({
   if (!show) return null
 
   return (
-    <Card className="mb-6 sm:mb-8">
+    <Card ref={formRef} className="mb-6 sm:mb-8">
       <CardHeader>
         <CardTitle className="text-lg sm:text-xl">
           {editingProduct ? "Editar Producto" : "Nuevo Producto"}
@@ -222,48 +236,13 @@ export default function ProductFormModal({
 
           {/* Images */}
           <div>
-            <Label htmlFor="images">Imágenes del Producto</Label>
-            <Input
-              id="images"
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={onImageUpload}
-              className="mb-2"
+            <ImageUploader
+              images={formData.images}
+              mainImage={formData.main_image}
+              onChange={(images, mainImage) => {
+                onFormDataChange({ ...formData, images, main_image: mainImage })
+              }}
             />
-            <div className="grid grid-cols-4 gap-2">
-              {uploadedImages.map((file, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={`Preview ${index + 1}`}
-                    className={`w-full h-20 object-cover rounded border-2 cursor-pointer transition-all ${
-                      index === mainImageIndex ? 'border-primary ring-2 ring-primary/20' : 'border-gray-200 hover:border-primary/50'
-                    }`}
-                    onClick={() => onMainImageChange(index)}
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-1 right-1 h-6 w-6 p-0"
-                    onClick={() => onRemoveImage(index)}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                  {index === mainImageIndex && (
-                    <div className="absolute bottom-1 left-1 bg-primary text-primary-foreground text-xs px-1 py-0.5 rounded">
-                      Principal
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-            {uploadedImages.length > 0 && (
-              <p className="text-sm text-muted-foreground mt-2">
-                Haz clic en una imagen para marcarla como principal
-              </p>
-            )}
           </div>
 
           {/* Actions */}

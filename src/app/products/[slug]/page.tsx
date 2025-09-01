@@ -39,7 +39,7 @@ export default function ProductDetailPage({ params, searchParams }: PageProps) {
         if (searchParams.id) {
           const { data, error } = await supabase
             .from("products")
-            .select("id, name, description, price, compare_at_price, images, specs, category_id")
+            .select("id, name, description, price, compare_at_price, images, specs, category_id, main_image, thumbnail_url")
             .eq("id", searchParams.id)
             .single()
 
@@ -51,7 +51,7 @@ export default function ProductDetailPage({ params, searchParams }: PageProps) {
         if (!productData) {
           const { data: products, error: slugError } = await supabase
             .from("products")
-            .select("id, name, description, price, compare_at_price, images, specs, category_id")
+            .select("id, name, description, price, compare_at_price, images, specs, category_id, main_image, thumbnail_url")
 
           if (!slugError && products) {
             productData = products.find((p: any) => toSlug(p.name) === params.slug)
@@ -104,7 +104,17 @@ export default function ProductDetailPage({ params, searchParams }: PageProps) {
 
   if (!product) return null
 
-  const productImages = getProductGallery(product.id, product.images as string[])
+  // Build images with main first (thumbnail_url as source of truth, fallback main_image), then gallery, deduped
+  const mainFirst: string[] = []
+  if (product?.thumbnail_url) mainFirst.push(product.thumbnail_url)
+  else if (product?.main_image) mainFirst.push(product.main_image)
+
+  const gallery: string[] = Array.isArray(product?.images) ? product.images : []
+  const ordered = Array.from(new Set([...(mainFirst.filter(Boolean) as string[]), ...gallery]))
+
+  const productImages = ordered.length > 0
+    ? ordered
+    : getProductGallery(product.id, product.images as string[])
 
   return (
     <div className="min-h-screen bg-background">

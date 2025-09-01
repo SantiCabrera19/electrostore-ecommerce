@@ -6,6 +6,7 @@ import { createBrowserClient } from '@/lib/supabase'
 import AdminHeader from '@/components/admin/AdminHeader'
 import ProductFormModal from '@/components/admin/ProductFormModal'
 import ProductGrid from '@/components/admin/ProductGrid'
+import CSVImporter from '@/components/admin/CSVImporter'
 import { useAdminData } from '@/hooks/useAdminData'
 import { useProductForm } from '@/hooks/useProductForm'
 
@@ -22,6 +23,7 @@ export default function AdminPanel() {
     updateProduct,
     deleteProduct,
     toggleProductVisibility,
+    bulkCreateProducts,
     getStats
   } = useAdminData()
 
@@ -94,6 +96,10 @@ export default function AdminPanel() {
     }
   }
 
+  const handleCSVImport = async (products: any[]) => {
+    await bulkCreateProducts(products)
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -129,7 +135,24 @@ export default function AdminPanel() {
           onNewProduct={startNewProduct}
         />
 
-        <div className="mt-8">
+        <div className="mt-8 space-y-8">
+          <CSVImporter 
+            categories={categories}
+            onImport={handleCSVImport}
+          />
+          
+          {/* Separador visual elegante */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-4 text-muted-foreground font-medium tracking-wider">
+                Gestión de Productos
+              </span>
+            </div>
+          </div>
+          
           <ProductGrid
             products={products}
             categories={categories}
