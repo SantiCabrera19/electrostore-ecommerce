@@ -1,5 +1,6 @@
 import { createServerClient } from "@/lib/supabase"
 import EcommercePageClient from "@/components/catalog/EcommercePageClient"
+import PromoCardsCarousel from "@/components/home/PromoCardsCarousel"
 import type { Tables } from "@/types/supabase"
 
 // Deshabilitar cache para que siempre muestre productos actualizados
@@ -19,6 +20,18 @@ export default async function EcommercePage({
     .order("created_at", { ascending: false })
   
   const { data: categories, error: categoriesError } = await supabase.from("categories").select("*")
+
+  // Fetch promos (reusing banners table), ignoring image fields
+  let banners: any[] = []
+  try {
+    const { data: bannersData, error: bannersError } = await supabase
+      .from("banners")
+      .select("id, title, subtitle, cta_label, cta_href, position")
+      .order("position", { ascending: true })
+    if (!bannersError && bannersData) banners = bannersData
+  } catch (_) {
+    // Ignore if the table isn't present yet
+  }
 
   if (productsError) {
     console.error("Error fetching products:", productsError.message)
@@ -59,6 +72,10 @@ export default async function EcommercePage({
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-none sm:max-w-7xl">
+        {/* Promos hero */}
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <PromoCardsCarousel promos={banners as any[]} />
+        </div>
         <EcommercePageClient
           initialProducts={pageProducts}
           categories={categories || []}

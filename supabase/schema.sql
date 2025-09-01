@@ -140,6 +140,30 @@ CREATE POLICY "Solo administradores pueden modificar productos"
   ON public.products FOR ALL 
   USING (EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'));
 
+-- Tabla de banners para el Hero de la portada
+CREATE TABLE IF NOT EXISTS public.banners (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  image_url TEXT,
+  title TEXT,
+  subtitle TEXT,
+  cta_label TEXT,
+  cta_href TEXT,
+  position INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- RLS y políticas para banners
+ALTER TABLE public.banners ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Cualquiera puede ver banners" 
+  ON public.banners FOR SELECT 
+  USING (true);
+
+CREATE POLICY "Solo administradores pueden modificar banners" 
+  ON public.banners FOR ALL 
+  USING (EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'));
+
 -- Políticas para órdenes
 CREATE POLICY "Los usuarios pueden ver sus propias órdenes" 
   ON public.orders FOR SELECT 

@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase'
 import AdminHeader from '@/components/admin/AdminHeader'
+import BannersManager from '@/components/admin/BannersManager'
 import ProductFormModal from '@/components/admin/ProductFormModal'
 import ProductGrid from '@/components/admin/ProductGrid'
 import CSVImporter from '@/components/admin/CSVImporter'
@@ -136,6 +137,9 @@ export default function AdminPanel() {
         />
 
         <div className="mt-8 space-y-8">
+          {/* Gestión de Banners */}
+          <BannersManager />
+
           <CSVImporter 
             categories={categories}
             onImport={handleCSVImport}
